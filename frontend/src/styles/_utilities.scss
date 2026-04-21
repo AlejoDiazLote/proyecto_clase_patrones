@@ -1,0 +1,97 @@
+@use "variables" as *;
+
+// Display
+.d-flex {
+  display: flex;
+}
+.d-grid {
+  display: grid;
+}
+.d-block {
+  display: block;
+}
+.d-none {
+  display: none;
+}
+
+// Flex
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-sm {
+  gap: $spacing-sm;
+}
+.gap-md {
+  gap: $spacing-md;
+}
+.gap-lg {
+  gap: $spacing-lg;
+}
+
+// Spacing
+.mt-sm {
+  margin-top: $spacing-sm;
+}
+.mt-md {
+  margin-top: $spacing-md;
+}
+.mt-lg {
+  margin-top: $spacing-lg;
+}
+.mb-sm {
+  margin-bottom: $spacing-sm;
+}
+.mb-md {
+  margin-bottom: $spacing-md;
+}
+.mb-lg {
+  margin-bottom: $spacing-lg;
+}
+.p-sm {
+  padding: $spacing-sm;
+}
+.p-md {
+  padding: $spacing-md;
+}
+.p-lg {
+  padding: $spacing-lg;
+}
+
+// Text
+.text-center {
+  text-align: center;
+}
+.text-sm {
+  font-size: $font-size-sm;
+}
+.text-lg {
+  font-size: $font-size-lg;
+}
+.font-bold {
+  font-weight: 700;
+}
+.text-muted {
+  color: $text-secondary;
+}
+
+// Width
+.w-full {
+  width: 100%;
+}
+.w-auto {
+  width: auto;
+}
+
+// Cursor
+.cursor-pointer {
+  cursor: pointer;
+}

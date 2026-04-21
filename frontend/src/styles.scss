@@ -1,0 +1,11 @@
+// Parciales globales
+@use "styles/variables";
+@use "styles/reset";
+@use "styles/theme";
+@use "styles/mixins";
+@use "styles/utilities";
+
+// Tailwind
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
