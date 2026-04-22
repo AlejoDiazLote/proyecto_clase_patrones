@@ -1,0 +1,193 @@
+<div class="esp">
+  <!-- Cabecera panel -->
+  <div class="esp__header">
+    <div class="esp__header-left">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        class="esp__icon"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M3 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3Zm1.5 3.25a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5h-5Zm0 3a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span class="esp__title">Sesiones del evento</span>
+      <span class="esp__count" *ngIf="!loading">{{ sessions.length }}</span>
+    </div>
+    <button
+      *ngIf="isAdminOrOrganizador"
+      class="esp-btn esp-btn--primary"
+      (click)="openCreate()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+      >
+        <path
+          d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"
+        />
+      </svg>
+      Nueva sesión
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="esp__state">
+    <div class="esp__spinner"></div>
+    <span>Cargando sesiones...</span>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="esp__state esp__state--error">
+    {{ error }}
+  </div>
+
+  <!-- Vacío -->
+  <div *ngIf="!loading && !error && sessions.length === 0" class="esp__empty">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M2 4.25A2.25 2.25 0 0 1 4.25 2h11.5A2.25 2.25 0 0 1 18 4.25v8.5A2.25 2.25 0 0 1 15.75 15h-3.105a3.501 3.501 0 0 0 1.1 1.677A.75.75 0 0 1 13.26 18H6.74a.75.75 0 0 1-.484-1.323A3.501 3.501 0 0 0 7.355 15H4.25A2.25 2.25 0 0 1 2 12.75v-8.5Zm1.5 0a.75.75 0 0 1 .75-.75h11.5a.75.75 0 0 1 .75.75v8.5a.75.75 0 0 1-.75.75H4.25a.75.75 0 0 1-.75-.75v-8.5Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <p>Este evento aún no tiene sesiones.</p>
+    <span *ngIf="isAdminOrOrganizador"
+      >Haz clic en "Nueva sesión" para agregar la primera.</span
+    >
+  </div>
+
+  <!-- Tabla de sesiones -->
+  <div
+    *ngIf="!loading && !error && sessions.length > 0"
+    class="esp__table-wrap"
+  >
+    <table class="esp__table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Fecha inicio</th>
+          <th>Fecha fin</th>
+          <th *ngIf="isAdminOrOrganizador" class="esp__table-actions">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of sessions">
+          <td class="esp__cell-title">{{ s.titulo }}</td>
+          <td class="esp__cell-desc">{{ s.descripcion || "—" }}</td>
+          <td class="esp__cell-date">
+            {{ s.fechaInicio | date: "dd/MM/yyyy HH:mm" : "" : "es" }}
+          </td>
+          <td class="esp__cell-date">
+            {{ s.fechaFin | date: "dd/MM/yyyy HH:mm" : "" : "es" }}
+          </td>
+          <td *ngIf="isAdminOrOrganizador" class="esp__cell-actions">
+            <button
+              class="esp-btn esp-btn--sm esp-btn--outline"
+              (click)="openEdit(s)"
+              title="Editar"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path
+                  d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.263a1.75 1.75 0 0 0 0-2.474Z"
+                />
+                <path
+                  d="M4.75 13.5c-.69 0-1.25-.56-1.25-1.25v-7.5c0-.69.56-1.25 1.25-1.25H8a.75.75 0 0 0 0-1.5H4.75A2.75 2.75 0 0 0 2 4.75v7.5A2.75 2.75 0 0 0 4.75 15h7.5A2.75 2.75 0 0 0 15 12.25V9a.75.75 0 0 0-1.5 0v3.25c0 .69-.56 1.25-1.25 1.25h-7.5Z"
+                />
+              </svg>
+              Editar
+            </button>
+            <button
+              *ngIf="isAdmin"
+              class="esp-btn esp-btn--sm esp-btn--danger"
+              (click)="askDelete(s)"
+              title="Eliminar"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Confirm eliminar -->
+  <div
+    *ngIf="confirmDeleteId"
+    class="esp-confirm-overlay"
+    (click)="cancelDelete()"
+  >
+    <div class="esp-confirm" (click)="$event.stopPropagation()">
+      <div class="esp-confirm__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <h3 class="esp-confirm__title">¿Eliminar sesión?</h3>
+      <p class="esp-confirm__msg">
+        Se eliminará "<strong>{{ confirmDeleteTitle }}</strong
+        >" de forma permanente.
+      </p>
+      <div class="esp-confirm__actions">
+        <button
+          class="esp-btn esp-btn--ghost"
+          (click)="cancelDelete()"
+          [disabled]="deleting"
+        >
+          Cancelar
+        </button>
+        <button
+          class="esp-btn esp-btn--danger"
+          (click)="executeDelete()"
+          [disabled]="deleting"
+        >
+          <span *ngIf="deleting" class="esp-spinner"></span>
+          Sí, eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal formulario sesión -->
+  <app-session-form-modal
+    *ngIf="showFormModal"
+    [session]="editingSession"
+    [eventoId]="eventId"
+    (saved)="onFormSaved()"
+    (closed)="onFormClosed()"
+  ></app-session-form-modal>
+</div>

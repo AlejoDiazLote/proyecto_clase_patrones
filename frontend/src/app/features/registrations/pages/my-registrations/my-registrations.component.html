@@ -1,0 +1,188 @@
+<div class="my-reg">
+  <!-- Header -->
+  <div class="my-reg__header">
+    <div>
+      <h1 class="my-reg__title">Mis inscripciones</h1>
+      <p class="my-reg__subtitle">
+        Gestiona tus inscripciones a eventos académicos
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="my-reg__state">
+    <div class="my-reg__spinner"></div>
+    <span>Cargando inscripciones...</span>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="my-reg__state my-reg__state--error">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      width="40"
+      height="40"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    {{ error }}
+  </div>
+
+  <!-- Vacío -->
+  <div
+    *ngIf="!loading && !error && registrations.length === 0"
+    class="my-reg__state my-reg__state--empty"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      width="48"
+      height="48"
+      class="my-reg__empty-icon"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <p class="my-reg__empty-title">Sin inscripciones</p>
+    <p class="my-reg__empty-sub">Aún no te has inscrito a ningún evento.</p>
+    <a routerLink="/events" class="my-reg__cta">Ver eventos disponibles</a>
+  </div>
+
+  <!-- Lista de inscripciones -->
+  <div
+    *ngIf="!loading && !error && registrations.length > 0"
+    class="my-reg__list"
+  >
+    <div *ngFor="let reg of registrations" class="reg-card">
+      <!-- Badges fila superior -->
+      <div class="reg-card__badges">
+        <span
+          class="reg-card__badge"
+          [ngClass]="modalityClass(reg.evento.modalidad)"
+        >
+          {{ modalityLabel(reg.evento.modalidad) }}
+        </span>
+        <span class="reg-card__status" [ngClass]="statusClass(reg.estado)">
+          {{ statusLabel(reg.estado) }}
+        </span>
+      </div>
+
+      <!-- Título evento -->
+      <h3 class="reg-card__title">{{ reg.evento.titulo }}</h3>
+
+      <!-- Meta info -->
+      <div class="reg-card__meta">
+        <!-- Fecha inicio -->
+        <div class="reg-card__meta-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            width="14"
+            height="14"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.75 1a.75.75 0 0 1 .75.75V3h5V1.75a.75.75 0 0 1 1.5 0V3h.25A2.75 2.75 0 0 1 15 5.75v7.5A2.75 2.75 0 0 1 12.25 16H3.75A2.75 2.75 0 0 1 1 13.25v-7.5A2.75 2.75 0 0 1 3.75 3H4V1.75A.75.75 0 0 1 4.75 1Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v5.5c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25v-5.5c0-.69-.56-1.25-1.25-1.25H3.75Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          {{ reg.evento.fechaInicio | date: "dd MMM yyyy, HH:mm" : "" : "es" }}
+        </div>
+        <!-- Tipo inscripción -->
+        <div class="reg-card__meta-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            width="14"
+            height="14"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4Zm0 6a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          {{
+            reg.evento.tipoInscripcion === "GRATUITA" ? "Gratuito" : "De pago"
+          }}
+        </div>
+        <!-- Fecha inscripción -->
+        <div class="reg-card__meta-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            width="14"
+            height="14"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8Zm7.75-4.25a.75.75 0 0 0-1.5 0V8c0 .414.336.75.75.75h3.25a.75.75 0 0 0 0-1.5h-2.5v-3.5Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Inscrito el {{ reg.createdAt | date: "dd MMM yyyy" : "" : "es" }}
+        </div>
+      </div>
+
+      <!-- Aviso pago pendiente -->
+      <div
+        *ngIf="
+          reg.estado === 'PENDIENTE' && reg.evento.tipoInscripcion === 'PAGA'
+        "
+        class="reg-card__notice"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          width="14"
+          height="14"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 6a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-2.5A.75.75 0 0 1 8 6Zm0 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        Pago pendiente de procesamiento
+      </div>
+
+      <!-- Acción cancelar -->
+      <div class="reg-card__footer">
+        <button
+          *ngIf="canCancel(reg)"
+          class="reg-card__btn reg-card__btn--cancel"
+          [disabled]="cancellingId === reg.id"
+          (click)="cancelar(reg)"
+        >
+          <span
+            *ngIf="cancellingId === reg.id"
+            class="reg-card__spinner"
+          ></span>
+          {{
+            cancellingId === reg.id ? "Cancelando..." : "Cancelar inscripción"
+          }}
+        </button>
+        <span *ngIf="!canCancel(reg)" class="reg-card__no-action">
+          {{
+            reg.estado === "CANCELADA"
+              ? "Inscripción cancelada"
+              : "No disponible"
+          }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

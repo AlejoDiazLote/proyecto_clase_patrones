@@ -1,0 +1,340 @@
+@use "../../../../../styles/variables" as *;
+
+$surface: #ffffff;
+$text: $text-primary;
+$text-muted: $text-secondary;
+$border: #e5e7eb;
+
+@keyframes sfm-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sfm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sfm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.sfm-modal {
+  background: $surface;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - 2.5rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.22);
+  animation: sfm-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: $primary;
+    flex-shrink: 0;
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+
+  &__icon {
+    width: 2.2rem;
+    height: 2.2rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    svg {
+      width: 1rem;
+      height: 1rem;
+      color: #fff;
+    }
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0.1rem 0 0;
+  }
+
+  &__close {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    transition: background 0.15s;
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+.sfm-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+  padding: 1.25rem 1.5rem 0.5rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.sfm-section {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.2rem;
+  grid-column: 1 / -1;
+  &:first-child {
+    margin-top: 0.2rem;
+  }
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $primary;
+    white-space: nowrap;
+  }
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba($primary, 0.18);
+  }
+}
+
+.sfm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-bottom: 0.7rem;
+  &--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.sfm-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $text;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sfm-optional {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: $text-muted;
+}
+.sfm-req {
+  color: $danger;
+}
+
+.sfm-input,
+.sfm-textarea {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.85rem;
+  border: 1.5px solid $border;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: $surface;
+  color: $text;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  &::placeholder {
+    color: #c4c9d3;
+  }
+  &:hover:not(:focus) {
+    border-color: darken($border, 12%);
+  }
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.12);
+  }
+  &--error {
+    border-color: $danger !important;
+    box-shadow: 0 0 0 3px rgba($danger, 0.1) !important;
+  }
+}
+
+.sfm-textarea {
+  height: auto;
+  padding: 0.55rem 0.85rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.sfm-error {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.775rem;
+  color: $danger;
+  font-weight: 500;
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
+    flex-shrink: 0;
+  }
+}
+
+.sfm-server-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  background: #fff3f3;
+  color: #b91c1c;
+  border: 1.5px solid #fca5a5;
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  grid-column: 1 / -1;
+  svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+}
+
+.sfm-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border;
+  background: #fafafa;
+  flex-shrink: 0;
+  grid-column: 1 / -1;
+}
+
+.sfm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.575rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s;
+  white-space: nowrap;
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  &:not(:disabled):active {
+    transform: scale(0.97);
+  }
+  &__icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+  }
+  &--primary {
+    background: $primary;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba($primary, 0.3);
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+      box-shadow: 0 4px 12px rgba($primary, 0.4);
+    }
+  }
+  &--ghost {
+    background: transparent;
+    border-color: $border;
+    color: $text;
+    &:hover:not(:disabled) {
+      background: $bg-light;
+    }
+  }
+}
+
+.sfm-spinner {
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: sfm-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .sfm-form {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  .sfm-modal__header {
+    padding: 1rem;
+  }
+  .sfm-footer {
+    flex-direction: column-reverse;
+    padding: 1rem;
+    .sfm-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "routes": [
+    "/auth",
+    "/auth/callback",
+    "/auth/login",
+    "/events",
+    "/events/admin",
+    "/mis-inscripciones"
+  ]
+}

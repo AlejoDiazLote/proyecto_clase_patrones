@@ -1,0 +1,268 @@
+<div class="admin-events">
+  <!-- Header -->
+  <div class="admin-events__header">
+    <div>
+      <h1 class="admin-events__title">Gestión de Eventos</h1>
+      <p class="admin-events__subtitle">
+        Administra todos los eventos académicos
+      </p>
+    </div>
+    <button
+      *ngIf="isAdminOrOrganizador"
+      class="ae-btn ae-btn--primary"
+      (click)="openCreate()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        class="w-4 h-4"
+      >
+        <path
+          d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"
+        />
+      </svg>
+      Nuevo evento
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="admin-events__filters">
+    <div class="ae-search">
+      <input
+        type="search"
+        [(ngModel)]="searchInput"
+        (keyup.enter)="onSearch()"
+        placeholder="Buscar evento..."
+        class="ae-search__input"
+      />
+      <button class="ae-search__btn" (click)="onSearch()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+    </div>
+    <select
+      class="ae-select"
+      (change)="onEstadoFilter($any($event.target).value)"
+    >
+      <option value="">Todos los estados</option>
+      <option value="BORRADOR">Borrador</option>
+      <option value="PUBLICADO">Publicado</option>
+      <option value="CANCELADO">Cancelado</option>
+      <option value="FINALIZADO">Finalizado</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="admin-events__state">
+    <div class="ae-spinner"></div>
+    <span>Cargando eventos...</span>
+  </div>
+
+  <!-- Error -->
+  <div
+    *ngIf="!loading && error"
+    class="admin-events__state admin-events__state--error"
+  >
+    {{ error }}
+  </div>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading && !error" class="ae-table-wrap">
+    <table class="ae-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Modalidad</th>
+          <th>Tipo</th>
+          <th>Fecha inicio</th>
+          <th>Cupos</th>
+          <th class="ae-table__actions-col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="events.length === 0">
+          <td colspan="7" class="ae-table__empty">
+            No se encontraron eventos.
+          </td>
+        </tr>
+        <ng-container *ngFor="let ev of events">
+          <tr [class.ae-row--expanded]="expandedEventId === ev.id">
+            <td class="ae-table__title">{{ ev.titulo }}</td>
+            <td>
+              <span class="ae-badge" [ngClass]="statusClass(ev.estado)">
+                {{ statusLabel(ev.estado) }}
+              </span>
+            </td>
+            <td>{{ modalityLabel(ev.modalidad) }}</td>
+            <td>
+              {{ ev.tipoInscripcion === "GRATUITA" ? "Gratuito" : "De pago" }}
+            </td>
+            <td class="ae-table__date">
+              {{ ev.fechaInicio | date: "dd/MM/yyyy HH:mm" : "" : "es" }}
+            </td>
+            <td>{{ ev.cuposDisponibles }} / {{ ev.capacidadMaxima }}</td>
+            <td class="ae-table__actions">
+              <button
+                *ngIf="isAdminOrOrganizador"
+                class="ae-btn ae-btn--sm ae-btn--outline"
+                (click)="openEdit(ev)"
+                title="Editar"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.263a1.75 1.75 0 0 0 0-2.474ZM4.75 13.5c-.69 0-1.25-.56-1.25-1.25v-7.5c0-.69.56-1.25 1.25-1.25H8a.75.75 0 0 0 0-1.5H4.75A2.75 2.75 0 0 0 2 4.75v7.5A2.75 2.75 0 0 0 4.75 15h7.5A2.75 2.75 0 0 0 15 12.25V9a.75.75 0 0 0-1.5 0v3.25c0 .69-.56 1.25-1.25 1.25h-7.5Z"
+                  />
+                </svg>
+                Editar
+              </button>
+              <button
+                *ngIf="isAdminOrOrganizador"
+                class="ae-btn ae-btn--sm ae-btn--sessions"
+                [class.ae-btn--sessions-active]="expandedEventId === ev.id"
+                (click)="toggleSessions(ev.id)"
+                title="Sesiones"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3Zm1.5 3.25a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5h-5Zm0 3a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Sesiones
+              </button>
+              <button
+                *ngIf="isAdmin"
+                class="ae-btn ae-btn--sm ae-btn--danger"
+                (click)="askDelete(ev)"
+                title="Eliminar"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Eliminar
+              </button>
+            </td>
+          </tr>
+          <!-- Panel de sesiones expandible -->
+          <tr *ngIf="expandedEventId === ev.id" class="ae-sessions-row">
+            <td colspan="7">
+              <app-event-sessions-panel
+                [eventId]="ev.id"
+                [isAdminOrOrganizador]="isAdminOrOrganizador"
+                [isAdmin]="isAdmin"
+              ></app-event-sessions-panel>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div *ngIf="totalPages > 1" class="ae-pagination">
+    <button
+      class="ae-page-btn"
+      [disabled]="page === 1"
+      (click)="onPageChange(page - 1)"
+    >
+      ‹
+    </button>
+    <button
+      *ngFor="let p of pages"
+      class="ae-page-btn"
+      [class.ae-page-btn--active]="p === page"
+      (click)="onPageChange(p)"
+    >
+      {{ p }}
+    </button>
+    <button
+      class="ae-page-btn"
+      [disabled]="page === totalPages"
+      (click)="onPageChange(page + 1)"
+    >
+      ›
+    </button>
+  </div>
+
+  <!-- Modal confirmación eliminar -->
+  <div *ngIf="confirmDeleteId" class="ae-overlay" (click)="cancelDelete()">
+    <div class="ae-confirm" (click)="$event.stopPropagation()">
+      <div class="ae-confirm__icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-8 h-8"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <h3 class="ae-confirm__title">¿Eliminar evento?</h3>
+      <p class="ae-confirm__msg">
+        Vas a eliminar <strong>{{ confirmDeleteTitle }}</strong
+        >. Esta acción no se puede deshacer.
+      </p>
+      <div class="ae-confirm__actions">
+        <button
+          class="ae-btn ae-btn--outline"
+          (click)="cancelDelete()"
+          [disabled]="deleting"
+        >
+          Cancelar
+        </button>
+        <button
+          class="ae-btn ae-btn--danger"
+          (click)="executeDelete()"
+          [disabled]="deleting"
+        >
+          <span *ngIf="deleting" class="ae-spinner ae-spinner--sm"></span>
+          {{ deleting ? "Eliminando..." : "Sí, eliminar" }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal formulario -->
+  <app-event-form-modal
+    *ngIf="showFormModal"
+    [event]="editingEvent"
+    (saved)="onFormSaved()"
+    (closed)="onFormClosed()"
+  ></app-event-form-modal>
+</div>

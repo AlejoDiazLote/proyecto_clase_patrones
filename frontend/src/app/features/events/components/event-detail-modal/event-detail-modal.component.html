@@ -1,0 +1,267 @@
+<div
+  *ngIf="visible"
+  class="modal-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-labelledby]="'modal-title-' + event?.id"
+>
+  <div class="modal-card">
+    <!-- Header -->
+    <div class="modal-card__header">
+      <span
+        class="modal-card__badge"
+        [ngClass]="modalityClass(event!.modalidad)"
+      >
+        {{ modalityLabel(event!.modalidad) }}
+      </span>
+      <button class="modal-card__close" (click)="close()" aria-label="Cerrar">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          width="20"
+          height="20"
+        >
+          <path
+            d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Título -->
+    <h2 class="modal-card__title" [id]="'modal-title-' + event?.id">
+      {{ event!.titulo }}
+    </h2>
+
+    <!-- Descripción -->
+    <p *ngIf="event!.descripcion" class="modal-card__desc">
+      {{ event!.descripcion }}
+    </p>
+    <p
+      *ngIf="!event!.descripcion"
+      class="modal-card__desc modal-card__desc--empty"
+    >
+      Sin descripción disponible.
+    </p>
+
+    <!-- Separador -->
+    <hr class="modal-card__divider" />
+
+    <!-- Info grid -->
+    <div class="modal-card__info-grid">
+      <!-- Fecha inicio -->
+      <div class="modal-card__info-item">
+        <span class="modal-card__info-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="18"
+            height="18"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+        <div>
+          <span class="modal-card__info-label">Inicio</span>
+          <span class="modal-card__info-value">{{
+            event!.fechaInicio
+              | date: "EEEE, dd 'de' MMMM yyyy, HH:mm" : "" : "es"
+          }}</span>
+        </div>
+      </div>
+
+      <!-- Fecha fin -->
+      <div class="modal-card__info-item">
+        <span class="modal-card__info-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="18"
+            height="18"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+        <div>
+          <span class="modal-card__info-label">Fin</span>
+          <span class="modal-card__info-value">{{
+            event!.fechaFin | date: "EEEE, dd 'de' MMMM yyyy, HH:mm" : "" : "es"
+          }}</span>
+        </div>
+      </div>
+
+      <!-- Cupos -->
+      <div class="modal-card__info-item">
+        <span class="modal-card__info-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="18"
+            height="18"
+          >
+            <path
+              d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 17a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z"
+            />
+          </svg>
+        </span>
+        <div>
+          <span class="modal-card__info-label">Capacidad</span>
+          <span class="modal-card__info-value"
+            >{{ event!.capacidadMaxima }} personas en total</span
+          >
+        </div>
+      </div>
+
+      <!-- Cupos disponibles -->
+      <div class="modal-card__info-item">
+        <span class="modal-card__info-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="18"
+            height="18"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+        <div>
+          <span class="modal-card__info-label">Cupos disponibles</span>
+          <span
+            class="modal-card__info-value"
+            [ngClass]="cuposClass(event!.cuposDisponibles)"
+          >
+            {{
+              event!.cuposDisponibles === 0
+                ? "Agotado"
+                : event!.cuposDisponibles + " cupos"
+            }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tipo inscripción -->
+      <div class="modal-card__info-item">
+        <span class="modal-card__info-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="18"
+            height="18"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M1 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4Zm12 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM4 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm13-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+        <div>
+          <span class="modal-card__info-label">Inscripción</span>
+          <span class="modal-card__info-value">{{
+            inscriptionLabel(event!.tipoInscripcion)
+          }}</span>
+        </div>
+      </div>
+
+      <!-- Estado -->
+      <div class="modal-card__info-item">
+        <span class="modal-card__info-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            width="18"
+            height="18"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12A6 6 0 0 1 10 4Zm-.75 3.75a.75.75 0 0 1 1.5 0v2.69l1.72 1.72a.75.75 0 1 1-1.06 1.06l-2-2a.75.75 0 0 1-.22-.53V7.75Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+        <div>
+          <span class="modal-card__info-label">Estado</span>
+          <span class="modal-card__info-value">{{
+            statusLabel(event!.estado)
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer acciones -->
+    <div class="modal-card__footer">
+      <button
+        class="modal-card__btn modal-card__btn--secondary"
+        (click)="close()"
+      >
+        Cerrar
+      </button>
+      <button
+        *ngIf="isLoggedIn && event!.cuposDisponibles > 0"
+        class="modal-card__btn modal-card__btn--primary"
+        [disabled]="
+          inscriptionState === 'loading' || inscriptionState === 'success'
+        "
+        [class.modal-card__btn--success]="inscriptionState === 'success'"
+        (click)="onInscribe()"
+      >
+        <!-- loading -->
+        <span
+          *ngIf="inscriptionState === 'loading'"
+          class="modal-card__spinner"
+        ></span>
+        <!-- success -->
+        <svg
+          *ngIf="inscriptionState === 'success'"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          width="16"
+          height="16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        {{
+          inscriptionState === "loading"
+            ? "Procesando..."
+            : inscriptionState === "success"
+              ? "¡Inscrito!"
+              : "Inscribirme"
+        }}
+      </button>
+      <span
+        *ngIf="isLoggedIn && event!.cuposDisponibles === 0"
+        class="modal-card__agotado"
+      >
+        Cupos agotados
+      </span>
+      <span *ngIf="!isLoggedIn" class="modal-card__hint">
+        Inicia sesión para inscribirte
+      </span>
+    </div>
+  </div>
+</div>

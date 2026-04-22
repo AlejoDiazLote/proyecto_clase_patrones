@@ -1,0 +1,376 @@
+<div class="efm-overlay" (click)="close()">
+  <div
+    class="efm-modal"
+    role="dialog"
+    [attr.aria-label]="isEditMode ? 'Editar evento' : 'Nuevo evento'"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="efm-modal__header">
+      <div class="efm-modal__header-left">
+        <div class="efm-modal__icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              *ngIf="!isEditMode"
+              d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
+            />
+            <path
+              *ngIf="isEditMode"
+              d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"
+            />
+          </svg>
+        </div>
+        <div>
+          <h2 class="efm-modal__title">
+            {{ isEditMode ? "Editar evento" : "Nuevo evento" }}
+          </h2>
+          <p class="efm-modal__subtitle">
+            {{
+              isEditMode
+                ? "Modifica los datos del evento"
+                : "Completa la información del nuevo evento"
+            }}
+          </p>
+        </div>
+      </div>
+      <button
+        class="efm-modal__close"
+        (click)="close()"
+        aria-label="Cerrar modal"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+        >
+          <path
+            d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="efm-form">
+      <!-- Sección: Información básica -->
+      <div class="efm-section efm-section--full">
+        <span class="efm-section__label">Información básica</span>
+      </div>
+
+      <!-- Título -->
+      <div class="efm-field efm-field--full">
+        <label class="efm-label" for="f-titulo"
+          >Título <span class="efm-req">*</span></label
+        >
+        <input
+          id="f-titulo"
+          type="text"
+          class="efm-input"
+          [class.efm-input--error]="isInvalid('titulo')"
+          formControlName="titulo"
+          placeholder="Nombre del evento"
+          autocomplete="off"
+        />
+        <span *ngIf="isInvalid('titulo')" class="efm-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+          >
+            <path
+              d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm-.75 2.75a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+          {{
+            form.get("titulo")?.errors?.["required"]
+              ? "El título es requerido."
+              : form.get("titulo")?.errors?.["minlength"]
+                ? "Mínimo 3 caracteres."
+                : "Máximo 150 caracteres."
+          }}
+        </span>
+      </div>
+
+      <!-- Descripción -->
+      <div class="efm-field efm-field--full">
+        <label class="efm-label" for="f-desc"
+          >Descripción <span class="efm-optional">(opcional)</span></label
+        >
+        <textarea
+          id="f-desc"
+          class="efm-textarea"
+          [class.efm-input--error]="isInvalid('descripcion')"
+          formControlName="descripcion"
+          rows="3"
+          placeholder="Describe el contenido, objetivos o detalles relevantes del evento"
+        ></textarea>
+        <span *ngIf="isInvalid('descripcion')" class="efm-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+          >
+            <path
+              d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm-.75 2.75a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+          Máximo 1000 caracteres.
+        </span>
+      </div>
+
+      <!-- Sección: Fechas -->
+      <div class="efm-section efm-section--full">
+        <span class="efm-section__label">Fechas</span>
+      </div>
+
+      <div class="efm-field">
+        <label class="efm-label" for="f-fi"
+          >Fecha de inicio <span class="efm-req">*</span></label
+        >
+        <input
+          id="f-fi"
+          type="datetime-local"
+          class="efm-input"
+          [class.efm-input--error]="isInvalid('fechaInicio')"
+          formControlName="fechaInicio"
+        />
+        <span *ngIf="isInvalid('fechaInicio')" class="efm-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+          >
+            <path
+              d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm-.75 2.75a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+          La fecha de inicio es requerida.
+        </span>
+      </div>
+
+      <div class="efm-field">
+        <label class="efm-label" for="f-ff"
+          >Fecha de fin <span class="efm-req">*</span></label
+        >
+        <input
+          id="f-ff"
+          type="datetime-local"
+          class="efm-input"
+          [class.efm-input--error]="isInvalid('fechaFin')"
+          formControlName="fechaFin"
+        />
+        <span *ngIf="isInvalid('fechaFin')" class="efm-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+          >
+            <path
+              d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm-.75 2.75a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+          La fecha de fin es requerida.
+        </span>
+      </div>
+
+      <!-- Sección: Capacidad -->
+      <div class="efm-section efm-section--full">
+        <span class="efm-section__label">Capacidad</span>
+      </div>
+
+      <div class="efm-field">
+        <label class="efm-label" for="f-cap"
+          >Capacidad máxima <span class="efm-req">*</span></label
+        >
+        <div class="efm-input-wrap">
+          <svg
+            class="efm-input-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+          >
+            <path
+              d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z"
+            />
+          </svg>
+          <input
+            id="f-cap"
+            type="number"
+            min="1"
+            class="efm-input efm-input--icon"
+            [class.efm-input--error]="isInvalid('capacidadMaxima')"
+            formControlName="capacidadMaxima"
+            placeholder="Ej. 100"
+          />
+        </div>
+        <span *ngIf="isInvalid('capacidadMaxima')" class="efm-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+          >
+            <path
+              d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm-.75 2.75a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+          Ingresa una capacidad válida (mín. 1).
+        </span>
+      </div>
+
+      <div class="efm-field" *ngIf="isEditMode">
+        <label class="efm-label" for="f-cupos"
+          >Cupos disponibles <span class="efm-req">*</span></label
+        >
+        <div class="efm-input-wrap">
+          <svg
+            class="efm-input-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+          >
+            <path
+              d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+            />
+          </svg>
+          <input
+            id="f-cupos"
+            type="number"
+            min="0"
+            class="efm-input efm-input--icon"
+            [class.efm-input--error]="isInvalid('cuposDisponibles')"
+            formControlName="cuposDisponibles"
+            placeholder="Ej. 80"
+          />
+        </div>
+        <span *ngIf="isInvalid('cuposDisponibles')" class="efm-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+          >
+            <path
+              d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm-.75 2.75a.75.75 0 0 1 1.5 0v2.5a.75.75 0 0 1-1.5 0v-2.5Zm.75 5.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+          Ingresa un valor válido (mín. 0).
+        </span>
+      </div>
+
+      <!-- Sección: Configuración -->
+      <div class="efm-section efm-section--full">
+        <span class="efm-section__label">Configuración</span>
+      </div>
+
+      <div class="efm-field">
+        <label class="efm-label" for="f-estado"
+          >Estado <span class="efm-req">*</span></label
+        >
+        <select id="f-estado" class="efm-select" formControlName="estado">
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="CANCELADO">Cancelado</option>
+          <option value="FINALIZADO">Finalizado</option>
+        </select>
+      </div>
+
+      <div class="efm-field">
+        <label class="efm-label" for="f-mod"
+          >Modalidad <span class="efm-req">*</span></label
+        >
+        <select id="f-mod" class="efm-select" formControlName="modalidad">
+          <option value="PRESENCIAL">Presencial</option>
+          <option value="VIRTUAL">Virtual</option>
+          <option value="HIBRIDO">Híbrido</option>
+        </select>
+      </div>
+
+      <div class="efm-field">
+        <label class="efm-label" for="f-tipo"
+          >Tipo de inscripción <span class="efm-req">*</span></label
+        >
+        <select
+          id="f-tipo"
+          class="efm-select"
+          formControlName="tipoInscripcion"
+        >
+          <option value="GRATUITA">Gratuita</option>
+          <option value="PAGA">De pago</option>
+        </select>
+      </div>
+
+      <!-- Error servidor -->
+      <div *ngIf="serverError" class="efm-server-error efm-field--full">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 6a.75.75 0 0 1 .75.75v2.5a.75.75 0 1 1-1.5 0v-2.5A.75.75 0 0 1 8 6Zm0 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        {{ serverError }}
+      </div>
+    </form>
+
+    <!-- Footer con acciones sticky -->
+    <div class="efm-footer">
+      <button
+        type="button"
+        class="efm-btn efm-btn--ghost"
+        (click)="close()"
+        [disabled]="submitting"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        form="efm-form"
+        class="efm-btn efm-btn--primary"
+        [disabled]="submitting"
+        (click)="submit()"
+      >
+        <span *ngIf="submitting" class="efm-spinner"></span>
+        <svg
+          *ngIf="!submitting && isEditMode"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="efm-btn__icon"
+        >
+          <path
+            d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.263a1.75 1.75 0 0 0 0-2.474Z"
+          />
+          <path
+            d="M4.75 13.5c-.69 0-1.25-.56-1.25-1.25v-7.5c0-.69.56-1.25 1.25-1.25H8a.75.75 0 0 0 0-1.5H4.75A2.75 2.75 0 0 0 2 4.75v7.5A2.75 2.75 0 0 0 4.75 15h7.5A2.75 2.75 0 0 0 15 12.25V9a.75.75 0 0 0-1.5 0v3.25c0 .69-.56 1.25-1.25 1.25h-7.5Z"
+          />
+        </svg>
+        <svg
+          *ngIf="!submitting && !isEditMode"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="efm-btn__icon"
+        >
+          <path
+            d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"
+          />
+        </svg>
+        {{
+          submitting
+            ? "Guardando..."
+            : isEditMode
+              ? "Guardar cambios"
+              : "Crear evento"
+        }}
+      </button>
+    </div>
+  </div>
+</div>

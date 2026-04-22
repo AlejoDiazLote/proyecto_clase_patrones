@@ -1,0 +1,6 @@
+export enum EventStatus {
+  BORRADOR = 'BORRADOR',
+  PUBLICADO = 'PUBLICADO',
+  CANCELADO = 'CANCELADO',
+  FINALIZADO = 'FINALIZADO',
+}

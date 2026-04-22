@@ -25,7 +25,7 @@ import { RegistrationsModule } from './modules/registrations/registrations.modul
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: true, // Solo para desarrollo, no usar en producción
       }),
     }),
 

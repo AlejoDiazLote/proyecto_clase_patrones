@@ -1,0 +1,217 @@
+<div class="catalog">
+  <!-- Header -->
+  <div class="catalog__header">
+    <div>
+      <h1 class="catalog__title">Eventos Académicos</h1>
+      <p class="catalog__subtitle">
+        Descubre y regístrate en los próximos eventos
+      </p>
+    </div>
+
+    <!-- Buscador -->
+    <div class="catalog__search">
+      <input
+        type="search"
+        [(ngModel)]="searchInput"
+        (keyup.enter)="onSearch()"
+        placeholder="Buscar evento..."
+        class="catalog__search-input"
+      />
+      <button class="catalog__search-btn" (click)="onSearch()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-5 h-5"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="catalog__state">
+    <div class="catalog__spinner"></div>
+    <span>Cargando eventos...</span>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="catalog__state catalog__state--error">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="w-10 h-10 mb-2"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    {{ error }}
+  </div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="!loading && !error && events.length === 0" class="catalog__state">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      class="w-10 h-10 mb-2 opacity-40"
+    >
+      <path
+        d="M5.25 12a.75.75 0 0 1 .75-.75h.01a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75H6a.75.75 0 0 1-.75-.75V12ZM6 13.25a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75h.01a.75.75 0 0 0 .75-.75V14a.75.75 0 0 0-.75-.75H6Z"
+      />
+      <path
+        fill-rule="evenodd"
+        d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    No se encontraron eventos.
+  </div>
+
+  <!-- Grid de eventos -->
+  <div *ngIf="!loading && !error && events.length > 0" class="catalog__grid">
+    <div *ngFor="let event of events" class="event-card">
+      <!-- Badge modalidad -->
+      <span
+        class="event-card__badge"
+        [ngClass]="modalityClass(event.modalidad)"
+      >
+        {{ modalityLabel(event.modalidad) }}
+      </span>
+
+      <h3 class="event-card__title">{{ event.titulo }}</h3>
+
+      <p *ngIf="event.descripcion" class="event-card__desc">
+        {{ event.descripcion }}
+      </p>
+
+      <div class="event-card__meta">
+        <!-- Fecha -->
+        <div class="event-card__meta-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              d="M5.75 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM5 10.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM10.25 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM9.5 10.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM7.25 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM6.5 10.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0Z"
+            />
+            <path
+              fill-rule="evenodd"
+              d="M4.75 1a.75.75 0 0 1 .75.75V3h5V1.75a.75.75 0 0 1 1.5 0V3h.25A2.75 2.75 0 0 1 15 5.75v7.5A2.75 2.75 0 0 1 12.25 16H3.75A2.75 2.75 0 0 1 1 13.25v-7.5A2.75 2.75 0 0 1 3.75 3H4V1.75A.75.75 0 0 1 4.75 1Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v5.5c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25v-5.5c0-.69-.56-1.25-1.25-1.25H3.75Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          {{ event.fechaInicio | date: "dd MMM yyyy, HH:mm" : "" : "es" }}
+        </div>
+        <!-- Cupos -->
+        <div class="event-card__meta-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z"
+            />
+          </svg>
+          {{ event.cuposDisponibles }} cupos disponibles
+        </div>
+        <!-- Tipo inscripción -->
+        <div class="event-card__meta-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              d="M10.75 1.75a.75.75 0 0 0-1.5 0V4h-1.5V1.75a.75.75 0 0 0-1.5 0V4h-.25A2.75 2.75 0 0 0 3.25 6.75v1.085a1.5 1.5 0 0 0 0 2.83V13.25A2.75 2.75 0 0 0 6 16h4a2.75 2.75 0 0 0 2.75-2.75v-2.585a1.5 1.5 0 0 0 0-2.83V6.75A2.75 2.75 0 0 0 10 4H9.75V1.75ZM8 9.5A1.5 1.5 0 1 1 8 6.5a1.5 1.5 0 0 1 0 3Z"
+            />
+          </svg>
+          {{ event.tipoInscripcion === "GRATUITA" ? "Gratuito" : "De pago" }}
+        </div>
+      </div>
+
+      <div class="event-card__actions">
+        <button
+          class="event-card__btn event-card__btn--outline"
+          (click)="openDetail(event)"
+        >
+          Ver detalles
+        </button>
+        <button
+          *ngIf="isLoggedIn && !isEnrolled(event.id)"
+          class="event-card__btn event-card__btn--primary"
+          (click)="openDetail(event)"
+        >
+          Inscribirme
+        </button>
+        <span
+          *ngIf="isLoggedIn && isEnrolled(event.id)"
+          class="event-card__enrolled"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="w-4 h-4"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          ¡Ya inscrito!
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal detalle -->
+  <app-event-detail-modal
+    [event]="selectedEvent"
+    [isLoggedIn]="isLoggedIn"
+    [inscriptionState]="inscriptionState"
+    (closed)="closeDetail()"
+    (inscribe)="onInscribir($event)"
+  ></app-event-detail-modal>
+
+  <!-- Paginación -->
+  <div *ngIf="totalPages > 1" class="catalog__pagination">
+    <button
+      class="catalog__page-btn"
+      [disabled]="page === 1"
+      (click)="onPageChange(page - 1)"
+    >
+      ‹
+    </button>
+    <button
+      *ngFor="let p of pages"
+      class="catalog__page-btn"
+      [class.catalog__page-btn--active]="p === page"
+      (click)="onPageChange(p)"
+    >
+      {{ p }}
+    </button>
+    <button
+      class="catalog__page-btn"
+      [disabled]="page === totalPages"
+      (click)="onPageChange(page + 1)"
+    >
+      ›
+    </button>
+  </div>
+</div>

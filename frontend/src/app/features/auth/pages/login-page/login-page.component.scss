@@ -1,0 +1,280 @@
+@use "../../../../../styles/variables" as *;
+@use "../../../../../styles/mixins" as *;
+
+.login-wrapper {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #e8eef8 0%, #f0f4fb 60%, #fff8e6 100%);
+  padding: $spacing-md;
+  // Compensar el padding del page-spacing
+  margin: -2.5rem -2rem;
+}
+
+.login-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: $spacing-2xl $spacing-xl;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 40px rgba(0, 45, 114, 0.13);
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: $primary;
+    border-radius: $radius-lg;
+    margin-bottom: $spacing-md;
+    color: $accent;
+    box-shadow: 0 4px 16px rgba(0, 45, 114, 0.25);
+  }
+
+  &__logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    margin: 0 0 $spacing-xs;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    background: rgba($danger, 0.08);
+    border: 1px solid rgba($danger, 0.3);
+    border-radius: 0.5rem;
+    padding: $spacing-sm $spacing-md;
+    color: $danger;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-md;
+  }
+
+  &__error-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__btn-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    width: 100%;
+    padding: 0.75rem $spacing-md;
+    background: var(--color-accent);
+    color: $primary;
+    font-size: $font-size-base;
+    font-weight: 700;
+    border: none;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      box-shadow 0.2s;
+    margin-top: $spacing-xs;
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-dark);
+      box-shadow: 0 3px 12px rgba($accent, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  &__spinner {
+    width: 18px;
+    height: 18px;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+// Form fields
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: $font-size-base;
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    outline: none;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+    box-sizing: border-box;
+
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba($primary, 0.15);
+    }
+
+    &--error {
+      border-color: $danger;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($danger, 0.15);
+      }
+    }
+
+    &--password {
+      padding-right: 2.75rem;
+    }
+  }
+
+  &__password-wrapper {
+    position: relative;
+  }
+
+  &__toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    padding: 0;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+
+  &__hint {
+    font-size: 0.75rem;
+
+    &--error {
+      color: $danger;
+    }
+  }
+}
+
+// ── Sección debajo del form (divider + Google + footer) ────────────────
+.login-card {
+  &__footer {
+    text-align: center;
+    font-size: $font-size-sm;
+    color: var(--text-secondary);
+    margin-top: $spacing-md;
+  }
+
+  &__footer-link {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // ── Divider "o continúa con" ──────────────────────────────
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin: $spacing-md 0 $spacing-sm;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+  }
+
+  // ── Botón Google ──────────────────────────────────────────
+  &__btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.7rem $spacing-md;
+    background: #fff;
+    color: #3c4043;
+    font-size: $font-size-sm;
+    font-weight: 600;
+    border: 1.5px solid var(--border-color);
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition:
+      background 0.18s,
+      border-color 0.18s,
+      box-shadow 0.18s;
+    font-family: inherit;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &:hover {
+      background: #f8f9fa;
+      border-color: #aab4c8;
+      box-shadow: 0 2px 8px rgba(0, 45, 114, 0.1);
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

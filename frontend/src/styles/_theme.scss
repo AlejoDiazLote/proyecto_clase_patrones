@@ -4,20 +4,25 @@
 :root {
   --color-primary: #{$primary};
   --color-primary-dark: #{$primary-dark};
+  --color-primary-light: #{$primary-light};
+  --color-accent: #{$accent};
+  --color-accent-dark: #{$accent-dark};
+  --color-accent-light: #{$accent-light};
   --color-secondary: #{$secondary};
   --color-success: #{$success};
   --color-warning: #{$warning};
   --color-danger: #{$danger};
 
-  --bg-page: #{$bg-light};
+  --bg-page: #f0f4fb;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f3f4f6;
+  --bg-surface-hover: #e8eef8;
 
   --text-primary: #{$text-primary};
   --text-secondary: #{$text-secondary};
 
-  --border-color: #e5e7eb;
-  --shadow: #{$shadow-md};
+  --border-color: #d4dff0;
+  --shadow: 0 2px 8px rgba(0, 45, 114, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 45, 114, 0.12);
 }
 
 // Dark theme

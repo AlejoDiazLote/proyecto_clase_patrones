@@ -1,0 +1,6 @@
+export enum RegistrationStatus {
+  PENDIENTE = 'PENDIENTE',
+  CONFIRMADA = 'CONFIRMADA',
+  CANCELADA = 'CANCELADA',
+  FALLIDA = 'FALLIDA',
+}
