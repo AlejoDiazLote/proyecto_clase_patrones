@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pago Confirmado</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .header__icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+      .header__title {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .content__greeting {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .content__text {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 15px;
+      }
+      .payment-summary {
+        background: #f0f9ff;
+        border: 2px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 25px 0;
+      }
+      .payment-summary__row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 15px;
+      }
+      .payment-summary__row--total {
+        border-top: 2px solid #93c5fd;
+        margin-top: 10px;
+        padding-top: 15px;
+        font-weight: 600;
+        font-size: 18px;
+        color: #1e40af;
+      }
+      .event-info {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 25px 0;
+      }
+      .event-info__title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #002d72;
+        margin: 0 0 10px;
+      }
+      .event-info__detail {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 5px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 14px 32px;
+        background: #2563eb;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 600;
+        margin: 20px 0;
+      }
+      .footer {
+        background: #f9f9f9;
+        padding: 25px 30px;
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+        border-top: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header__icon">💳✅</div>
+        <h1 class="header__title">¡Pago Confirmado!</h1>
+      </div>
+
+      <div class="content">
+        <p class="content__greeting">Hola {{ nombreUsuario }},</p>
+
+        <p class="content__text">
+          ¡Excelentes noticias! Tu pago ha sido procesado exitosamente y tu
+          inscripción al evento ha sido <strong>confirmada</strong>.
+        </p>
+
+        <div class="payment-summary">
+          <h3 style="margin-top: 0; color: #1e40af">Resumen del Pago</h3>
+          <div class="payment-summary__row">
+            <span>Método de pago:</span>
+            <span><strong>{{ metodoPago }}</strong></span>
+          </div>
+          <div class="payment-summary__row">
+            <span>ID de transacción:</span>
+            <span
+              ><code style="font-size: 12px">{{ transaccionId }}</code></span
+            >
+          </div>
+          <div class="payment-summary__row">
+            <span>Fecha:</span>
+            <span>{{ fechaPago }}</span>
+          </div>
+          <div class="payment-summary__row payment-summary__row--total">
+            <span>Total pagado:</span>
+            <span>${{ monto }} USD</span>
+          </div>
+        </div>
+
+        <div class="event-info">
+          <h3 class="event-info__title">{{ tituloEvento }}</h3>
+          <p class="event-info__detail">
+            📅 {{ fechaInicio }} - {{ fechaFin }}
+          </p>
+          <p class="event-info__detail">📍 {{ modalidad }}</p>
+        </div>
+
+        <p class="content__text">
+          Tu lugar está asegurado. Te esperamos en el evento.
+        </p>
+
+        <div style="text-align: center">
+          <a href="{{ appUrl }}/mis-inscripciones" class="button"
+            >Ver Mis Inscripciones</a
+          >
+        </div>
+
+        <p
+          class="content__text"
+          style="margin-top: 30px; font-size: 13px; color: #888"
+        >
+          💡
+          <em
+            >Recibirás un certificado de asistencia al finalizar el evento.</em
+          >
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          <strong>Pontificia Universidad Javeriana</strong>
+        </p>
+        <p>
+          Este es un correo automático, por favor no respondas a este mensaje.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

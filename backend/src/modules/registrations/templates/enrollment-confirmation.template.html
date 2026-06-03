@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscripción Confirmada</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .header__icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+      .header__title {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .content__greeting {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .content__text {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 15px;
+      }
+      .event-card {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 25px 0;
+      }
+      .event-card__title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #002d72;
+        margin: 0 0 15px;
+      }
+      .event-card__info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 8px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-top: 10px;
+      }
+      .badge--free {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .badge--paid {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .button {
+        display: inline-block;
+        padding: 14px 32px;
+        background: #002d72;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 600;
+        margin: 20px 0;
+      }
+      .footer {
+        background: #f9f9f9;
+        padding: 25px 30px;
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+        border-top: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header__icon">✅</div>
+        <h1 class="header__title">¡Inscripción Exitosa!</h1>
+      </div>
+
+      <div class="content">
+        <p class="content__greeting">Hola {{ nombreUsuario }},</p>
+
+        <p class="content__text">
+          Tu inscripción ha sido registrada exitosamente. A continuación
+          encontrarás los detalles del evento:
+        </p>
+
+        <div class="event-card">
+          <h3 class="event-card__title">{{ tituloEvento }}</h3>
+
+          <div class="event-card__info">
+            📅 <strong>Fecha de inicio:</strong> {{ fechaInicio }}
+          </div>
+          <div class="event-card__info">
+            📅 <strong>Fecha de fin:</strong> {{ fechaFin }}
+          </div>
+          <div class="event-card__info">
+            📍 <strong>Modalidad:</strong> {{ modalidad }}
+          </div>
+          {{#if ubicacion}}
+          <div class="event-card__info">
+            🏢 <strong>Ubicación:</strong> {{ ubicacion }}
+          </div>
+          {{/if}} {{#if esPago}}
+          <span class="badge badge--paid">Evento de pago</span>
+          {{else}}
+          <span class="badge badge--free">Evento gratuito</span>
+          {{/if}}
+        </div>
+
+        {{#if esPago}}
+        <p class="content__text">
+          ⚠️ <strong>Importante:</strong> Tu inscripción está en estado
+          <strong>PENDIENTE</strong>. Debes completar el pago para confirmar tu
+          participación.
+        </p>
+        <div style="text-align: center">
+          <a href="{{ appUrl }}/mis-inscripciones" class="button"
+            >Completar Pago</a
+          >
+        </div>
+        {{else}}
+        <p class="content__text">
+          Tu inscripción ha sido <strong>confirmada automáticamente</strong>. Te
+          esperamos en el evento.
+        </p>
+        <div style="text-align: center">
+          <a href="{{ appUrl }}/mis-inscripciones" class="button"
+            >Ver Mis Inscripciones</a
+          >
+        </div>
+        {{/if}}
+      </div>
+
+      <div class="footer">
+        <p>
+          <strong>Pontificia Universidad Javeriana</strong>
+        </p>
+        <p>
+          Este es un correo automático, por favor no respondas a este mensaje.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

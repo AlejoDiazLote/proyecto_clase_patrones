@@ -79,6 +79,7 @@ export class EventFormModalComponent implements OnInit, OnChanges {
       estado: ['BORRADOR', Validators.required],
       modalidad: ['PRESENCIAL', Validators.required],
       tipoInscripcion: ['GRATUITA', Validators.required],
+      precio: [0, [Validators.min(0)]],
     });
   }
 
@@ -93,6 +94,7 @@ export class EventFormModalComponent implements OnInit, OnChanges {
       estado: ev.estado,
       modalidad: ev.modalidad,
       tipoInscripcion: ev.tipoInscripcion,
+      precio: ev.precio ?? 0,
     });
   }
 
@@ -125,6 +127,7 @@ export class EventFormModalComponent implements OnInit, OnChanges {
         estado: raw.estado,
         modalidad: raw.modalidad,
         tipoInscripcion: raw.tipoInscripcion,
+        precio: raw.tipoInscripcion === 'PAGA' ? Number(raw.precio) : 0,
       };
       this.eventsService.update(this.event!.id, dto).subscribe({
         next: () => {
@@ -153,6 +156,7 @@ export class EventFormModalComponent implements OnInit, OnChanges {
         estado: raw.estado,
         modalidad: raw.modalidad,
         tipoInscripcion: raw.tipoInscripcion,
+        precio: raw.tipoInscripcion === 'PAGA' ? Number(raw.precio) : 0,
       };
       this.eventsService.create(dto).subscribe({
         next: () => {

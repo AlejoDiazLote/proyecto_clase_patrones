@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bienvenido</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #002d72 0%, #0047a0 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .header__logo {
+        margin-bottom: 20px;
+      }
+      .header__title {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .header__subtitle {
+        font-size: 14px;
+        margin: 10px 0 0;
+        opacity: 0.9;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .content__greeting {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .content__text {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 15px;
+      }
+      .button {
+        display: inline-block;
+        padding: 14px 32px;
+        background: #ffb81c;
+        color: #002d72;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 600;
+        margin: 20px 0;
+        transition: background 0.3s;
+      }
+      .button:hover {
+        background: #ffa500;
+      }
+      .footer {
+        background: #f9f9f9;
+        padding: 25px 30px;
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+        border-top: 1px solid #eee;
+      }
+      .footer__text {
+        margin: 5px 0;
+      }
+      .footer__link {
+        color: #002d72;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header__logo">🎓</div>
+        <h1 class="header__title">¡Bienvenido!</h1>
+        <p class="header__subtitle">Pontificia Universidad Javeriana</p>
+      </div>
+
+      <div class="content">
+        <p class="content__greeting">Hola {{ nombre }},</p>
+
+        <p class="content__text">
+          Nos complace darte la bienvenida a la plataforma de
+          <strong>Eventos Académicos</strong> de la Pontificia Universidad
+          Javeriana.
+        </p>
+
+        <p class="content__text">
+          Tu cuenta ha sido creada exitosamente. Ahora puedes explorar nuestro
+          catálogo de eventos académicos y realizar inscripciones de forma
+          sencilla.
+        </p>
+
+        <p class="content__text">
+          <strong>¿Qué puedes hacer?</strong>
+        </p>
+        <ul style="color: #555; line-height: 1.8; margin-left: 20px">
+          <li>Explorar el catálogo de eventos disponibles</li>
+          <li>Inscribirte en eventos gratuitos o de pago</li>
+          <li>Gestionar tus inscripciones</li>
+          <li>Descargar certificados al finalizar los eventos</li>
+        </ul>
+
+        <div style="text-align: center">
+          <a href="{{ appUrl }}/events" class="button">Explorar Eventos</a>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p class="footer__text">
+          <strong>Pontificia Universidad Javeriana</strong>
+        </p>
+        <p class="footer__text">
+          Este es un correo automático, por favor no respondas a este mensaje.
+        </p>
+        <p class="footer__text">
+          Si tienes alguna pregunta, visita nuestra
+          <a href="{{ appUrl }}" class="footer__link">plataforma</a>.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

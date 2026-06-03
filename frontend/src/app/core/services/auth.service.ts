@@ -8,6 +8,7 @@ import {
   AuthResponse,
   AuthUser,
   LoginCredentials,
+  RegisterCredentials,
 } from '../models/auth.models';
 
 const TOKEN_KEY = 'access_token';
@@ -34,6 +35,20 @@ export class AuthService {
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${environment.apiUrl}/auth/login`, credentials)
+      .pipe(
+        tap((res) => {
+          if (this.isBrowser) {
+            localStorage.setItem(TOKEN_KEY, res.access_token);
+            localStorage.setItem(USER_KEY, JSON.stringify(res.usuario));
+          }
+          this.currentUserSubject.next(res.usuario);
+        }),
+      );
+  }
+
+  register(credentials: RegisterCredentials): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, credentials)
       .pipe(
         tap((res) => {
           if (this.isBrowser) {

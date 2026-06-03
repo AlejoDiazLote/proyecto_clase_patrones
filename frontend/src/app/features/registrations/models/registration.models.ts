@@ -21,12 +21,19 @@ export interface RegistrationUser {
   correo: string;
 }
 
+export interface RegistrationCertificate {
+  codigoUnico: string;
+  urlPdf?: string | null;
+  generadoEn?: string;
+}
+
 export interface Registration {
   id: string;
   estado: RegistrationStatus;
   createdAt: string;
   usuario: RegistrationUser;
   evento: RegistrationEvent;
+  certificado?: RegistrationCertificate | null;
 }
 
 export interface InscribirseDto {

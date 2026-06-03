@@ -3,8 +3,14 @@
     "/auth",
     "/auth/callback",
     "/auth/login",
+    "/auth/register",
+    "/checkout",
     "/events",
     "/events/admin",
-    "/mis-inscripciones"
+    "/mis-certificados",
+    "/mis-inscripciones",
+    "/organizer",
+    "/ponente",
+    "/ponente/invitacion"
   ]
 }

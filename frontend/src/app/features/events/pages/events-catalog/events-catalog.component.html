@@ -185,8 +185,13 @@
     [event]="selectedEvent"
     [isLoggedIn]="isLoggedIn"
     [inscriptionState]="inscriptionState"
+    [paymentState]="paymentState"
+    [userRegistration]="
+      selectedEvent ? getUserRegistration(selectedEvent.id) : null
+    "
     (closed)="closeDetail()"
     (inscribe)="onInscribir($event)"
+    (pay)="onPagar($event)"
   ></app-event-detail-modal>
 
   <!-- Paginación -->

@@ -1,4 +1,9 @@
-export type EventStatus = 'BORRADOR' | 'PUBLICADO' | 'CANCELADO' | 'FINALIZADO';
+export type EventStatus =
+  | 'BORRADOR'
+  | 'EN_REVISION'
+  | 'PUBLICADO'
+  | 'CANCELADO'
+  | 'FINALIZADO';
 export type EventModality = 'PRESENCIAL' | 'VIRTUAL' | 'HIBRIDO';
 export type InscriptionType = 'GRATUITA' | 'PAGA';
 
@@ -12,6 +17,7 @@ export interface CreateEventDto {
   estado?: EventStatus;
   modalidad?: EventModality;
   tipoInscripcion?: InscriptionType;
+  precio?: number;
 }
 
 export type UpdateEventDto = Partial<CreateEventDto>;
@@ -27,6 +33,11 @@ export interface Event {
   estado: EventStatus;
   modalidad: EventModality;
   tipoInscripcion: InscriptionType;
+  precio: number;
+  ubicacion?: string | null;
+  enlaceConferencia?: string | null;
+  fechaLimiteInscripcion?: string | null;
+  requiereAprobacion?: boolean;
 }
 
 export interface PaginatedEvents {

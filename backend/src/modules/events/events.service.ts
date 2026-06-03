@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from './entities/event.entity';
@@ -6,6 +10,8 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { FilterEventDto } from './dto/filter-event.dto';
 import { PaginatedResult, paginate } from '../../shared/dto/pagination.dto';
+import { EventStatus } from '../../database/enums/event-status.enum';
+import { EventModality } from '../../database/enums/event-modality.enum';
 
 @Injectable()
 export class EventsService {
@@ -70,8 +76,92 @@ export class EventsService {
     return this.eventsRepository.save(event);
   }
 
+  async publish(id: string): Promise<Event> {
+    const event = await this.findOne(id);
+
+    if (
+      event.estado !== EventStatus.BORRADOR &&
+      event.estado !== EventStatus.EN_REVISION
+    ) {
+      throw new BadRequestException(
+        `Solo se puede publicar un evento en estado BORRADOR o EN_REVISION (actual: ${event.estado})`,
+      );
+    }
+
+    // Validar campos obligatorios según modalidad
+    if (
+      (event.modalidad === EventModality.PRESENCIAL ||
+        event.modalidad === EventModality.HIBRIDO) &&
+      !event.ubicacion
+    ) {
+      throw new BadRequestException(
+        'Los eventos PRESENCIAL e HÍBRIDO requieren una ubicación',
+      );
+    }
+
+    if (
+      (event.modalidad === EventModality.VIRTUAL ||
+        event.modalidad === EventModality.HIBRIDO) &&
+      !event.enlaceConferencia
+    ) {
+      throw new BadRequestException(
+        'Los eventos VIRTUAL e HÍBRIDO requieren un enlace de conferencia',
+      );
+    }
+
+    // Verificar al menos una sesión
+    const sessionCount = await this.eventsRepository
+      .createQueryBuilder('evento')
+      .leftJoin('sesiones', 'sesion', 'sesion.evento_id = evento.id')
+      .where('evento.id = :id', { id })
+      .select('COUNT(sesion.id)', 'total')
+      .getRawOne<{ total: string }>();
+
+    if (!sessionCount || Number(sessionCount.total) === 0) {
+      throw new BadRequestException(
+        'El evento debe tener al menos una sesión antes de publicarse. Por favor, crea una sesión desde el panel de administración del evento.',
+      );
+    }
+
+    event.estado = event.requiereAprobacion
+      ? EventStatus.EN_REVISION
+      : EventStatus.PUBLICADO;
+
+    return this.eventsRepository.save(event);
+  }
+
+  async approve(id: string): Promise<Event> {
+    const event = await this.findOne(id);
+
+    if (event.estado !== EventStatus.EN_REVISION) {
+      throw new BadRequestException(
+        `Solo se puede aprobar un evento EN_REVISION (actual: ${event.estado})`,
+      );
+    }
+
+    event.estado = EventStatus.PUBLICADO;
+    return this.eventsRepository.save(event);
+  }
+
   async remove(id: string): Promise<void> {
     const event = await this.findOne(id);
     await this.eventsRepository.remove(event);
+  }
+
+  async getRegistrations(eventoId: string, estado?: string): Promise<any[]> {
+    const event = await this.findOne(eventoId);
+
+    const qb = this.eventsRepository
+      .createQueryBuilder('evento')
+      .leftJoinAndSelect('evento.inscripciones', 'inscripcion')
+      .leftJoinAndSelect('inscripcion.usuario', 'usuario')
+      .where('evento.id = :eventoId', { eventoId });
+
+    if (estado) {
+      qb.andWhere('inscripcion.estado = :estado', { estado });
+    }
+
+    const result = await qb.getOne();
+    return result?.inscripciones ?? [];
   }
 }

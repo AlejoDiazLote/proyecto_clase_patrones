@@ -1,99 +1,127 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend NestJS para la plataforma de gestión de eventos académicos.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Stack
 
-## Description
+- NestJS 10
+- TypeORM 0.3
+- PostgreSQL
+- JWT + Google OAuth
+- Stripe
+- Bull + Redis
+- Mailer + Handlebars
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Módulos principales
 
-## Project setup
+- `auth`: autenticación local y OAuth Google
+- `users`: gestión de usuarios
+- `roles`: autorización por rol
+- `events`: creación, edición, publicación y aprobación de eventos
+- `sessions`: agenda e invitaciones a ponentes
+- `registrations`: inscripciones de usuarios
+- `payments`: creación de PaymentIntents y recepción de webhooks
+- `organizer`: reportes, asistencia y certificados
 
-```bash
-$ npm install
+## Patrones aplicados
+
+### 1. Modularidad por dominio
+
+Cada capacidad del sistema se encapsula en un módulo Nest con su controlador, servicio, DTOs y entidades. Esto reduce acoplamiento y mejora mantenibilidad.
+
+### 2. DTO + Validation Pipe
+
+Los datos de entrada se validan con DTOs y `ValidationPipe` global. El controlador delega objetos ya validados a la capa de servicio.
+
+### 3. Service Layer
+
+La lógica de negocio vive en servicios, no en controladores. Los controladores actúan como adaptadores HTTP.
+
+### 4. Guards para seguridad transversal
+
+- `JwtAuthGuard`: exige autenticación
+- `RolesGuard`: valida acceso por rol
+- decorador `@Roles(...)`: declara autorización de forma explícita por endpoint
+
+### 5. Idempotencia en pagos
+
+`PaymentsService.createPaymentIntent()` reutiliza un PaymentIntent pendiente existente antes de crear uno nuevo. Ese patrón evita cargos duplicados cuando el usuario refresca el checkout o reintenta la operación.
+
+### 6. Eventual Consistency vía webhook
+
+La confirmación final del pago no se resuelve en el request del frontend. Stripe notifica por webhook a `/payments/webhook` y el backend actualiza:
+
+- `Payment.estado -> COMPLETADO | FALLIDO`
+- `Registration.estado -> CONFIRMADA | FALLIDA`
+
+Eso mantiene el sistema alineado con la fuente de verdad de Stripe.
+
+## Variables de entorno
+
+Archivo: `.env`
+
+```env
+PORT=3000
+
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=eventos_academicos
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres123
+
+JWT_SECRET=super_secret_dev
+JWT_EXPIRES_IN=1d
+
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+
+FRONTEND_URL=http://localhost:4200
+
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+MAIL_HOST=localhost
+MAIL_PORT=1025
+MAIL_USER=
+MAIL_PASS=
+MAIL_FROM="Eventos Académicos <no-reply@eventos.edu>"
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
-## Compile and run the project
+## Flujo de pago
+
+1. El frontend solicita `POST /payments/create-intent` con `inscripcionId`.
+2. El backend valida que la inscripción exista y esté en `PENDIENTE`.
+3. Si ya existe un PaymentIntent pendiente, se reutiliza.
+4. Si no existe, se crea uno nuevo en Stripe.
+5. Stripe procesa el cobro.
+6. Stripe envía `payment_intent.succeeded` o `payment_intent.payment_failed` al webhook.
+7. El backend actualiza pago e inscripción.
+
+## Webhook local de Stripe
+
+Para desarrollo local, usa Stripe CLI:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+stripe listen --forward-to localhost:3000/payments/webhook
 ```
 
-## Run tests
+Luego copia el `whsec_...` entregado por Stripe CLI y colócalo en `.env` como `STRIPE_WEBHOOK_SECRET`.
+
+## Desarrollo
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
+npm run start:dev
 ```
 
-## Deployment
+Swagger:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- `http://localhost:3000/api/docs`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Nota importante
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Aunque Stripe confirme el pago en el cliente, la inscripción solo debe considerarse cerrada cuando el webhook haya actualizado el estado en la base de datos. Ese es el contrato de consistencia del sistema.

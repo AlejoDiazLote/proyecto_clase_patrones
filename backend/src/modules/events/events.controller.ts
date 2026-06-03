@@ -60,6 +60,17 @@ export class EventsController {
     return this.eventsService.findOne(id);
   }
 
+  @Get(':id/registrations')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'ORGANIZADOR')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener inscripciones de un evento' })
+  @ApiParam({ name: 'id', description: 'UUID del evento (eventoId)' })
+  @ApiResponse({ status: 200, description: 'Lista de inscripciones' })
+  getRegistrations(@Param('id') id: string, @Query('estado') estado?: string) {
+    return this.eventsService.getRegistrations(id, estado);
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'ORGANIZADOR')
@@ -72,6 +83,34 @@ export class EventsController {
   @ApiResponse({ status: 404, description: 'Evento no encontrado' })
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
     return this.eventsService.update(id, updateEventDto);
+  }
+
+  @Patch(':id/publish')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'ORGANIZADOR')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Publicar un evento (pasa a PUBLICADO o EN_REVISION si requiere aprobación)',
+  })
+  @ApiParam({ name: 'id', description: 'UUID del evento' })
+  @ApiResponse({
+    status: 200,
+    description: 'Evento publicado o enviado a revisión',
+  })
+  publish(@Param('id') id: string) {
+    return this.eventsService.publish(id);
+  }
+
+  @Patch(':id/approve')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Aprobar un evento EN_REVISION (solo ADMIN)' })
+  @ApiParam({ name: 'id', description: 'UUID del evento' })
+  @ApiResponse({ status: 200, description: 'Evento aprobado y publicado' })
+  approve(@Param('id') id: string) {
+    return this.eventsService.approve(id);
   }
 
   @Delete(':id')

@@ -92,4 +92,13 @@ export class CreateEventDto {
   @IsEnum(RegistrationInscripcionType)
   @IsOptional()
   tipoInscripcion?: RegistrationInscripcionType;
+
+  @ApiPropertyOptional({
+    example: 50.0,
+    description: 'Precio de inscripción (requerido si tipoInscripcion es PAGA)',
+    minimum: 0,
+  })
+  @IsOptional()
+  @Min(0)
+  precio?: number;
 }

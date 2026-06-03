@@ -37,4 +37,22 @@ export class RegistrationsService {
       { params },
     );
   }
+
+  createPaymentIntent(inscripcionId: string): Observable<{ clientSecret: string }> {
+    return this.http.post<{ clientSecret: string }>(
+      `${environment.apiUrl}/payments/create-intent`,
+      { inscripcionId },
+    );
+  }
+
+  getQrUrl(inscripcionId: string): string {
+    return `${environment.apiUrl}/registrations/${inscripcionId}/qr`;
+  }
+
+  getCertificate(codigoUnico: string): Observable<Blob> {
+    return this.http.get(
+      `${environment.apiUrl}/certificates/${codigoUnico}`,
+      { responseType: 'blob' },
+    );
+  }
 }

@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 import { EventsService } from '../../services/events.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { RegistrationsService } from '../../../registrations/services/registrations.service';
+import { Registration } from '../../../registrations/models/registration.models';
 import { AuthUser } from '../../../../core/models/auth.models';
 import { Event, EventFilters } from '../../models/event.models';
 
@@ -27,13 +29,18 @@ export class EventsCatalogComponent implements OnInit {
 
   selectedEvent: Event | null = null;
   inscriptionState: 'idle' | 'loading' | 'success' | 'error' = 'idle';
+  paymentState: 'idle' | 'loading' = 'idle';
   enrolledEventIds = new Set<string>();
+  /** Mapa eventoId → inscripción del usuario */
+  userRegistrationsMap = new Map<string, Registration>();
 
   constructor(
     private eventsService: EventsService,
     private authService: AuthService,
     private registrationsService: RegistrationsService,
     private toastService: ToastService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -44,16 +51,20 @@ export class EventsCatalogComponent implements OnInit {
         this.loadEnrolled(user.id);
       } else {
         this.enrolledEventIds.clear();
+        this.userRegistrationsMap.clear();
       }
     });
+    // Cargar eventos siempre
     this.loadEvents();
   }
 
   loadEnrolled(userId: string): void {
+    console.log('[EventsCatalog] Cargando inscripciones para usuario:', userId);
     this.registrationsService
       .getMisInscripciones(userId, { limit: 200 })
       .subscribe({
         next: (res) => {
+          console.log('[EventsCatalog] Inscripciones recibidas:', res);
           this.enrolledEventIds = new Set(
             res.data
               .filter(
@@ -61,13 +72,38 @@ export class EventsCatalogComponent implements OnInit {
               )
               .map((r) => r.evento.id),
           );
+          this.userRegistrationsMap = new Map(
+            res.data
+              .filter(
+                (r) => r.estado === 'CONFIRMADA' || r.estado === 'PENDIENTE',
+              )
+              .map((r) => [r.evento.id, r]),
+          );
+          console.log(
+            '[EventsCatalog] enrolledEventIds:',
+            Array.from(this.enrolledEventIds),
+          );
+          console.log(
+            '[EventsCatalog] userRegistrationsMap size:',
+            this.userRegistrationsMap.size,
+          );
+          // Forzar detección de cambios después de cargar inscripciones
+          this.cdr.markForCheck();
         },
-        error: () => {},
+        error: (err) => {
+          console.error('[EventsCatalog] Error cargando inscripciones:', err);
+          // No mostramos error al usuario, solo fallamos silenciosamente
+          // Los eventos ya se cargaron de todas formas
+        },
       });
   }
 
   isEnrolled(eventId: string): boolean {
     return this.enrolledEventIds.has(eventId);
+  }
+
+  getUserRegistration(eventId: string): Registration | null {
+    return this.userRegistrationsMap.get(eventId) ?? null;
   }
 
   loadEvents(): void {
@@ -133,11 +169,13 @@ export class EventsCatalogComponent implements OnInit {
   openDetail(event: Event): void {
     this.selectedEvent = event;
     this.inscriptionState = 'idle';
+    this.paymentState = 'idle';
   }
 
   closeDetail(): void {
     this.selectedEvent = null;
     this.inscriptionState = 'idle';
+    this.paymentState = 'idle';
   }
 
   onInscribir(event: Event): void {
@@ -151,6 +189,7 @@ export class EventsCatalogComponent implements OnInit {
         next: (reg) => {
           this.inscriptionState = 'success';
           this.enrolledEventIds.add(event.id);
+          this.userRegistrationsMap.set(event.id, reg);
           // Decrementar cupos localmente
           this.events = this.events.map((e) =>
             e.id === event.id
@@ -171,13 +210,25 @@ export class EventsCatalogComponent implements OnInit {
               'warning',
             );
           }
+          // Forzar detección de cambios
+          this.cdr.markForCheck();
+          // Resetear estado después de 2 segundos
+          setTimeout(() => {
+            this.inscriptionState = 'idle';
+            this.cdr.markForCheck();
+          }, 2000);
         },
         error: (err) => {
           this.inscriptionState = 'idle';
           const msg =
             err?.error?.message ?? 'No se pudo completar la inscripción.';
           this.toastService.show(Array.isArray(msg) ? msg[0] : msg, 'error');
+          this.cdr.markForCheck();
         },
       });
+  }
+
+  onPagar(reg: Registration): void {
+    this.router.navigate(['/checkout'], { queryParams: { id: reg.id } });
   }
 }

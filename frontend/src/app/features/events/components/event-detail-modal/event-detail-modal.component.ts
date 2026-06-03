@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Event } from '../../models/event.models';
+import { Registration } from '../../../registrations/models/registration.models';
 
 @Component({
   selector: 'app-event-detail-modal',
@@ -21,8 +22,13 @@ export class EventDetailModalComponent implements OnChanges {
   @Input() event: Event | null = null;
   @Input() isLoggedIn = false;
   @Input() inscriptionState: 'idle' | 'loading' | 'success' | 'error' = 'idle';
+  /** Inscripción actual del usuario en este evento (si existe) */
+  @Input() userRegistration: Registration | null = null;
+  /** Estado del proceso de pago */
+  @Input() paymentState: 'idle' | 'loading' = 'idle';
   @Output() closed = new EventEmitter<void>();
   @Output() inscribe = new EventEmitter<Event>();
+  @Output() pay = new EventEmitter<Registration>();
 
   visible = false;
   private isBrowser: boolean;
@@ -47,6 +53,29 @@ export class EventDetailModalComponent implements OnChanges {
 
   onInscribe(): void {
     if (this.event) this.inscribe.emit(this.event);
+  }
+
+  onPay(): void {
+    if (this.userRegistration) this.pay.emit(this.userRegistration);
+  }
+
+  get showPayButton(): boolean {
+    return (
+      this.isLoggedIn &&
+      !!this.userRegistration &&
+      this.userRegistration.estado === 'PENDIENTE' &&
+      this.event?.tipoInscripcion === 'PAGA'
+    );
+  }
+
+  get showConferenceLink(): boolean {
+    const modalidad = this.event?.modalidad;
+    const enlace = this.event?.enlaceConferencia;
+    return (
+      !!enlace &&
+      (modalidad === 'VIRTUAL' || modalidad === 'HIBRIDO') &&
+      this.userRegistration?.estado === 'CONFIRMADA'
+    );
   }
 
   onBackdropClick(event: MouseEvent): void {

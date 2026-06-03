@@ -143,9 +143,36 @@ export class AdminEventsComponent implements OnInit {
     });
   }
 
+  publishEvent(event: Event): void {
+    this.eventsService.publish(event.id).subscribe({
+      next: () => {
+        this.toastService.show('Evento enviado a publicación.', 'success');
+        this.loadEvents();
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'No se pudo publicar el evento.';
+        this.toastService.show(Array.isArray(msg) ? msg[0] : msg, 'error');
+      },
+    });
+  }
+
+  approveEvent(event: Event): void {
+    this.eventsService.approve(event.id).subscribe({
+      next: () => {
+        this.toastService.show('Evento aprobado y publicado.', 'success');
+        this.loadEvents();
+      },
+      error: (err) => {
+        const msg = err?.error?.message ?? 'No se pudo aprobar el evento.';
+        this.toastService.show(Array.isArray(msg) ? msg[0] : msg, 'error');
+      },
+    });
+  }
+
   statusLabel(s: string): string {
     const map: Record<string, string> = {
       BORRADOR: 'Borrador',
+      EN_REVISION: 'En revisión',
       PUBLICADO: 'Publicado',
       CANCELADO: 'Cancelado',
       FINALIZADO: 'Finalizado',
@@ -156,6 +183,7 @@ export class AdminEventsComponent implements OnInit {
   statusClass(s: string): string {
     const map: Record<string, string> = {
       BORRADOR: 'badge--borrador',
+      EN_REVISION: 'badge--revision',
       PUBLICADO: 'badge--publicado',
       CANCELADO: 'badge--cancelado',
       FINALIZADO: 'badge--finalizado',

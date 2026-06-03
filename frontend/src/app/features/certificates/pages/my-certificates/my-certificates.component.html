@@ -1,0 +1,151 @@
+<div class="mc-container">
+  <!-- Header -->
+  <div class="mc-header">
+    <div class="mc-header__left">
+      <svg
+        class="mc-header__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 0 0-.584.859 6.753 6.753 0 0 0 6.138 5.6 6.73 6.73 0 0 0 2.743 1.346A6.707 6.707 0 0 1 9.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 0 0-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 0 1-1.112-3.173 6.73 6.73 0 0 0 2.743-1.347 6.753 6.753 0 0 0 6.139-5.6.75.75 0 0 0-.585-.858 47.077 47.077 0 0 0-3.07-.543V2.62a.75.75 0 0 0-.658-.744 49.22 49.22 0 0 0-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 0 0-.657.744Zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 0 1 3.16 5.337a45.6 45.6 0 0 1 2.006-.343v.256Zm13.5 0v-.256c.674.1 1.343.214 2.006.343a5.265 5.265 0 0 1-2.863 3.207 6.72 6.72 0 0 0 .857-3.294Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <div>
+        <h1 class="mc-header__title">Mis Certificados</h1>
+        <p class="mc-header__subtitle">
+          Certificados de eventos a los que has asistido
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="mc-loading">
+    <div class="mc-skeleton mc-skeleton--lg"></div>
+    <div class="mc-skeleton mc-skeleton--lg"></div>
+    <div class="mc-skeleton mc-skeleton--lg"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="mc-error">
+    <svg
+      class="mc-error__icon"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <p class="mc-error__text">{{ error }}</p>
+    <button class="mc-btn mc-btn--primary" (click)="loadCertificates()">
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && certificates.length === 0" class="mc-empty">
+    <svg
+      class="mc-empty__icon"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+      />
+    </svg>
+    <h2 class="mc-empty__title">No tienes certificados aún</h2>
+    <p class="mc-empty__text">
+      Los certificados se generan automáticamente cuando asistes a eventos
+      finalizados.
+    </p>
+  </div>
+
+  <!-- Certificates List -->
+  <div *ngIf="!loading && !error && certificates.length > 0" class="mc-grid">
+    <div *ngFor="let cert of certificates" class="mc-card">
+      <!-- Badge de modalidad -->
+      <div class="mc-card__header">
+        <span
+          class="mc__badge"
+          [ngClass]="getModalityBadge(cert.inscripcion.evento.modalidad)"
+        >
+          {{ cert.inscripcion.evento.modalidad }}
+        </span>
+        <span class="mc-card__date">
+          {{ formatDate(cert.generadoEn) }}
+        </span>
+      </div>
+
+      <!-- Título del evento -->
+      <h3 class="mc-card__title">
+        {{ cert.inscripcion.evento.titulo }}
+      </h3>
+
+      <!-- Fechas del evento -->
+      <div class="mc-card__dates">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="mc-card__icon"
+        >
+          <path
+            d="M5.75 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM5 10.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM10.25 7.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM7.25 8.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0ZM8 9.5A.75.75 0 1 0 8 11a.75.75 0 0 0 0-1.5Z"
+          />
+          <path
+            fill-rule="evenodd"
+            d="M4.75 1a.75.75 0 0 0-.75.75V3a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2V1.75a.75.75 0 0 0-1.5 0V3h-5V1.75A.75.75 0 0 0 4.75 1ZM3.5 7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V7Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span>
+          {{ formatDate(cert.inscripcion.evento.fechaInicio) }} -
+          {{ formatDate(cert.inscripcion.evento.fechaFin) }}
+        </span>
+      </div>
+
+      <!-- Código único -->
+      <div class="mc-card__code">
+        <span class="mc-card__code-label">Código:</span>
+        <code class="mc-card__code-value">{{
+          cert.codigoUnico.substring(0, 8).toUpperCase()
+        }}</code>
+      </div>
+
+      <!-- Botón de descarga -->
+      <button
+        class="mc-btn mc-btn--download"
+        (click)="onDownload(cert)"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="mc-btn__icon"
+        >
+          <path
+            d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z"
+          />
+          <path
+            d="M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z"
+          />
+        </svg>
+        Descargar PDF
+      </button>
+    </div>
+  </div>
+</div>

@@ -16,6 +16,8 @@ import { PaginatedResult, paginate } from '../../shared/dto/pagination.dto';
 import { RegistrationStatus } from '../../database/enums/registration-status.enum';
 import { EventStatus } from '../../database/enums/event-status.enum';
 import { RegistrationInscripcionType } from '../../database/enums/inscription-type.enum';
+import { NotificationsService } from '../common/notifications/notifications.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RegistrationsService {
@@ -23,6 +25,8 @@ export class RegistrationsService {
     @InjectRepository(Registration)
     private readonly registrationsRepository: Repository<Registration>,
     private readonly dataSource: DataSource,
+    private readonly notificationsService: NotificationsService,
+    private readonly configService: ConfigService,
   ) {}
 
   async inscribirse(dto: InscribirseDto): Promise<{
@@ -96,6 +100,23 @@ export class RegistrationsService {
       });
 
       const inscripcionGuardada = await manager.save(inscripcion);
+
+      // Enviar email de confirmación de inscripción
+      const appUrl = this.configService.get<string>(
+        'APP_URL',
+        'http://localhost:4200',
+      );
+      await this.notificationsService.enqueueEnrollmentConfirmation({
+        nombreUsuario: usuario.nombre,
+        correo: usuario.correo,
+        tituloEvento: evento.titulo,
+        fechaInicio: evento.fechaInicio.toISOString(),
+        fechaFin: evento.fechaFin.toISOString(),
+        modalidad: evento.modalidad,
+        ubicacion: evento.ubicacion,
+        esPago: evento.tipoInscripcion === RegistrationInscripcionType.PAGA,
+        appUrl,
+      });
 
       return {
         mensaje:

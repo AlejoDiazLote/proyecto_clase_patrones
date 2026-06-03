@@ -50,6 +50,8 @@ async function seed() {
     { nombre: 'ADMIN' },
     { nombre: 'ORGANIZADOR' },
     { nombre: 'PARTICIPANTE' },
+    { nombre: 'PONENTE' },
+    { nombre: 'REVISOR' },
   ]);
 
   // Usuarios
@@ -294,7 +296,7 @@ async function seed() {
 
   console.log('Seed completado exitosamente!');
   console.log(
-    '  3 roles | 7 usuarios | 5 eventos | 9 sesiones | 11 inscripciones',
+    '  5 roles | 7 usuarios | 5 eventos | 9 sesiones | 11 inscripciones',
   );
   console.log('');
   console.log('Credenciales de prueba:');

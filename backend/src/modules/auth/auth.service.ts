@@ -13,6 +13,8 @@ import { Role } from '../roles/entities/role.entity';
 import { AuthProvider } from '../../database/enums/auth-provider.enum';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { NotificationsService } from '../common/notifications/notifications.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +24,8 @@ export class AuthService {
     @InjectRepository(Role)
     private readonly rolesRepository: Repository<Role>,
     private readonly jwtService: JwtService,
+    private readonly notificationsService: NotificationsService,
+    private readonly configService: ConfigService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -46,6 +50,17 @@ export class AuthService {
     });
 
     await this.usersRepository.save(nuevo);
+
+    // Enviar email de bienvenida
+    const appUrl = this.configService.get<string>(
+      'APP_URL',
+      'http://localhost:4200',
+    );
+    await this.notificationsService.enqueueWelcomeEmail({
+      nombre: nuevo.nombre,
+      correo: nuevo.correo,
+      appUrl,
+    });
 
     // Recargar con relaciones
     const guardado = await this.usersRepository.findOne({

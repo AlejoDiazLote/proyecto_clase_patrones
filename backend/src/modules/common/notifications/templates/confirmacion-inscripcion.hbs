@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Inscripción Confirmada</title></head>
+<body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <h2 style="color: #2563eb;">¡Inscripción confirmada!</h2>
+  <p>Hola <strong>{{nombre}}</strong>,</p>
+  <p>Tu inscripción al evento <strong>{{eventoTitulo}}</strong> ha sido confirmada.</p>
+  <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+    <tr><td style="padding:8px; font-weight:bold;">Fecha inicio:</td><td style="padding:8px;">{{fechaInicio}}</td></tr>
+    <tr><td style="padding:8px; font-weight:bold;">Modalidad:</td><td style="padding:8px;">{{modalidad}}</td></tr>
+    {{#if ubicacion}}<tr><td style="padding:8px; font-weight:bold;">Ubicación:</td><td style="padding:8px;">{{ubicacion}}</td></tr>{{/if}}
+  </table>
+  <p style="color:#666; font-size:12px;">Si no solicitaste esta inscripción, ignora este correo.</p>
+</body>
+</html>

@@ -48,6 +48,14 @@ export class EventsService {
     return this.http.patch<Event>(`${this.base}/${id}`, dto);
   }
 
+  publish(id: string): Observable<Event> {
+    return this.http.patch<Event>(`${this.base}/${id}/publish`, {});
+  }
+
+  approve(id: string): Observable<Event> {
+    return this.http.patch<Event>(`${this.base}/${id}/approve`, {});
+  }
+
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }

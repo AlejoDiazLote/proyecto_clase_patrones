@@ -154,6 +154,25 @@
                 Sesiones
               </button>
               <button
+                *ngIf="
+                  isAdminOrOrganizador &&
+                  (ev.estado === 'BORRADOR' || ev.estado === 'EN_REVISION')
+                "
+                class="ae-btn ae-btn--sm ae-btn--publish"
+                (click)="publishEvent(ev)"
+                title="Publicar evento"
+              >
+                Publicar
+              </button>
+              <button
+                *ngIf="isAdmin && ev.estado === 'EN_REVISION'"
+                class="ae-btn ae-btn--sm ae-btn--approve"
+                (click)="approveEvent(ev)"
+                title="Aprobar y publicar"
+              >
+                Aprobar
+              </button>
+              <button
                 *ngIf="isAdmin"
                 class="ae-btn ae-btn--sm ae-btn--danger"
                 (click)="askDelete(ev)"

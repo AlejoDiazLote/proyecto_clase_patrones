@@ -159,8 +159,20 @@
         Pago pendiente de procesamiento
       </div>
 
-      <!-- Acción cancelar -->
+      <!-- Acción cancelar / pagar / QR / certificado -->
       <div class="reg-card__footer">
+        <!-- Pagar (evento de pago + inscripción pendiente) -->
+        <button
+          *ngIf="canPay(reg)"
+          class="reg-card__btn reg-card__btn--pay"
+          [disabled]="payingId === reg.id"
+          (click)="pagar(reg)"
+        >
+          <span *ngIf="payingId === reg.id" class="reg-card__spinner"></span>
+          {{ payingId === reg.id ? "Procesando..." : "Pagar ahora" }}
+        </button>
+
+        <!-- Cancelar -->
         <button
           *ngIf="canCancel(reg)"
           class="reg-card__btn reg-card__btn--cancel"
@@ -175,11 +187,37 @@
             cancellingId === reg.id ? "Cancelando..." : "Cancelar inscripción"
           }}
         </button>
-        <span *ngIf="!canCancel(reg)" class="reg-card__no-action">
+
+        <!-- QR de acceso -->
+        <button
+          *ngIf="canDownloadQr(reg)"
+          class="reg-card__btn reg-card__btn--qr"
+          (click)="descargarQr(reg)"
+          title="Descargar código QR de acceso"
+        >
+          QR de acceso
+        </button>
+
+        <!-- Certificado -->
+        <button
+          *ngIf="canDownloadCertificate(reg)"
+          class="reg-card__btn reg-card__btn--cert"
+          (click)="descargarCertificado(reg)"
+          title="Descargar certificado de participación"
+        >
+          Descargar certificado
+        </button>
+
+        <span
+          *ngIf="!canCancel(reg) && !canPay(reg)"
+          class="reg-card__no-action"
+        >
           {{
             reg.estado === "CANCELADA"
               ? "Inscripción cancelada"
-              : "No disponible"
+              : reg.estado === "FALLIDA"
+                ? "Pago fallido"
+                : "No disponible"
           }}
         </span>
       </div>

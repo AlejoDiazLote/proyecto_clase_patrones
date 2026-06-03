@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificado Disponible</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .header__icon {
+        font-size: 64px;
+        margin-bottom: 15px;
+      }
+      .header__title {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+      }
+      .content {
+        padding: 40px 30px;
+      }
+      .content__greeting {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .content__text {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 15px;
+      }
+      .certificate-card {
+        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        border: 2px solid #c4b5fd;
+        border-radius: 12px;
+        padding: 30px;
+        margin: 25px 0;
+        text-align: center;
+      }
+      .certificate-card__icon {
+        font-size: 80px;
+        margin-bottom: 15px;
+      }
+      .certificate-card__title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #5b21b6;
+        margin: 0 0 10px;
+      }
+      .certificate-card__event {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 15px;
+      }
+      .certificate-card__code {
+        display: inline-block;
+        background: #ffffff;
+        border: 1px solid #c4b5fd;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: #5b21b6;
+        margin: 10px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 16px 40px;
+        background: #7c3aed;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 16px;
+        margin: 20px 0;
+        box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);
+      }
+      .info-box {
+        background: #f0fdf4;
+        border-left: 4px solid #10b981;
+        padding: 15px 20px;
+        margin: 25px 0;
+        font-size: 14px;
+        color: #065f46;
+      }
+      .footer {
+        background: #f9f9f9;
+        padding: 25px 30px;
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+        border-top: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="header__icon">🏆</div>
+        <h1 class="header__title">¡Tu Certificado Está Listo!</h1>
+      </div>
+
+      <div class="content">
+        <p class="content__greeting">Felicitaciones {{ nombreUsuario }},</p>
+
+        <p class="content__text">
+          Tu certificado de asistencia al evento
+          <strong>"{{ tituloEvento }}"</strong> ha sido generado y está
+          disponible para descargar.
+        </p>
+
+        <div class="certificate-card">
+          <div class="certificate-card__icon">📜</div>
+          <h3 class="certificate-card__title">Certificado de Asistencia</h3>
+          <p class="certificate-card__event">{{ tituloEvento }}</p>
+          <p style="font-size: 14px; color: #6b7280; margin: 10px 0">
+            {{ fechaInicio }} - {{ fechaFin }}
+          </p>
+          <p style="font-size: 13px; color: #9ca3af; margin-top: 10px">
+            Código de verificación:
+          </p>
+          <div class="certificate-card__code">{{ codigoCertificado }}</div>
+        </div>
+
+        <div style="text-align: center">
+          <a href="{{ appUrl }}/mis-certificados" class="button"
+            >Descargar Certificado</a
+          >
+        </div>
+
+        <div class="info-box">
+          <strong>ℹ️ Información importante:</strong><br />
+          • El certificado está en formato PDF<br />
+          • Puedes descargarlo las veces que necesites<br />
+          • El código de verificación permite validar su autenticidad<br />
+          • Conserva este certificado para tu registro académico
+        </div>
+
+        <p class="content__text">
+          Gracias por participar en nuestros eventos académicos. ¡Esperamos
+          verte pronto en nuevos eventos!
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          <strong>Pontificia Universidad Javeriana</strong>
+        </p>
+        <p>
+          Este es un correo automático, por favor no respondas a este mensaje.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
