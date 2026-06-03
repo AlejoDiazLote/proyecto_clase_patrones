@@ -44,6 +44,13 @@ export class RegistrationsController {
     description: 'El usuario ya tiene una inscripción activa',
   })
   inscribirse(@Body() dto: InscribirseDto) {
+    console.log('[DEBUG] Inscripción recibida:', {
+      dto,
+      usuarioId: dto.usuarioId,
+      eventoId: dto.eventoId,
+      usuarioIdType: typeof dto.usuarioId,
+      eventoIdType: typeof dto.eventoId,
+    });
     return this.registrationsService.inscribirse(dto);
   }
 

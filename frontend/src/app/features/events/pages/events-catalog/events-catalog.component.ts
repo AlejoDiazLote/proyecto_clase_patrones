@@ -182,6 +182,14 @@ export class EventsCatalogComponent implements OnInit {
     const user = this.authService.currentUser;
     if (!user) return;
 
+    // Debug: Verificar los valores antes de enviar
+    console.log('[DEBUG] Inscripción:', {
+      usuarioId: user.id,
+      eventoId: event.id,
+      eventoIdType: typeof event.id,
+      evento: event
+    });
+
     this.inscriptionState = 'loading';
     this.registrationsService
       .inscribirse({ usuarioId: user.id, eventoId: event.id })

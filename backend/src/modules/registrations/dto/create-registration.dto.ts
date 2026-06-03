@@ -1,20 +1,25 @@
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class InscribirseDto {
   @ApiProperty({
     example: 'uuid-del-usuario',
     description: 'UUID del usuario que se inscribe',
   })
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
+  @IsUUID('4', { message: 'usuarioId must be a valid UUID' })
+  @Transform(({ value }) => value?.toString().trim())
   usuarioId: string;
 
   @ApiProperty({
     example: 'uuid-del-evento',
     description: 'UUID del evento al que se inscribe',
   })
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
+  @IsUUID('4', { message: 'eventoId must be a valid UUID' })
+  @Transform(({ value }) => value?.toString().trim())
   eventoId: string;
 }

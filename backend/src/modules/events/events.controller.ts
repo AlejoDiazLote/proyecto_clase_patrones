@@ -51,6 +51,22 @@ export class EventsController {
     return this.eventsService.findAll(filters);
   }
 
+  @Get('debug/ids')
+  @ApiOperation({ summary: 'Debug: Listar IDs de eventos' })
+  @ApiResponse({ status: 200, description: 'Lista de IDs' })
+  async debugIds() {
+    const events = await this.eventsService.findAll({ limit: 100 });
+    return {
+      count: events.data.length,
+      ids: events.data.map(e => ({
+        id: e.id,
+        idType: typeof e.id,
+        titulo: e.titulo,
+        isUuid: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(e.id)
+      }))
+    };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un evento por ID' })
   @ApiParam({ name: 'id', description: 'UUID del evento' })
