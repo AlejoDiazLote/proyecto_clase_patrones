@@ -97,6 +97,7 @@ export class CertificatesService {
   async getByCodigoUnico(codigoUnico: string): Promise<StreamableFile> {
     const cert = await this.certificatesRepository.findOne({
       where: { codigoUnico },
+      relations: ['inscripcion', 'inscripcion.usuario', 'inscripcion.evento'],
     });
 
     if (!cert) throw new NotFoundException('Certificado no encontrado');
@@ -118,6 +119,7 @@ export class CertificatesService {
   async findByRegistration(inscripcionId: string): Promise<Certificate | null> {
     return this.certificatesRepository.findOne({
       where: { inscripcion: { id: inscripcionId } },
+      relations: ['inscripcion', 'inscripcion.usuario', 'inscripcion.evento'],
     });
   }
 

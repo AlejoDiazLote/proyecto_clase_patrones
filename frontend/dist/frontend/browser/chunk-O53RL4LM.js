@@ -1,0 +1,1 @@
+import{a as n}from"./chunk-4HJEOGOS.js";import{Ca as o,l as r}from"./chunk-2HLTHV2J.js";function f(u){return()=>{let e=r(n),t=r(o);if(!e.isLoggedIn())return t.createUrlTree(["/auth/login"]);let i=e.currentUser?.rol??"";return u.includes(i)?!0:t.createUrlTree(["/events"])}}export{f as a};

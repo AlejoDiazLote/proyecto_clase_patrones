@@ -90,33 +90,39 @@ export class RegistrationsService {
           ? RegistrationStatus.CONFIRMADA
           : RegistrationStatus.PENDIENTE;
 
-      evento.cuposDisponibles -= 1;
-      await manager.save(evento);
+      // Actualizar cupos directamente sin cargar relaciones
+      await manager.decrement(Event, { id: evento.id }, 'cuposDisponibles', 1);
 
+      // Crear inscripción usando solo IDs para evitar problemas con relaciones
       const inscripcion = manager.create(Registration, {
-        usuario,
-        evento,
+        usuario: { id: dto.usuarioId } as User,
+        evento: { id: dto.eventoId } as Event,
         estado: estadoInicial,
       });
 
-      const inscripcionGuardada = await manager.save(inscripcion);
+      const inscripcionGuardada = await manager.save(Registration, inscripcion);
 
-      // Enviar email de confirmación de inscripción
-      const appUrl = this.configService.get<string>(
-        'APP_URL',
-        'http://localhost:4200',
-      );
-      await this.notificationsService.enqueueEnrollmentConfirmation({
-        nombreUsuario: usuario.nombre,
-        correo: usuario.correo,
-        tituloEvento: evento.titulo,
-        fechaInicio: evento.fechaInicio.toISOString(),
-        fechaFin: evento.fechaFin.toISOString(),
-        modalidad: evento.modalidad,
-        ubicacion: evento.ubicacion,
-        esPago: evento.tipoInscripcion === RegistrationInscripcionType.PAGA,
-        appUrl,
-      });
+      // Enviar email de confirmación de inscripción (sin bloquear si falla)
+      try {
+        const appUrl = this.configService.get<string>(
+          'APP_URL',
+          'http://localhost:4200',
+        );
+        await this.notificationsService.enqueueEnrollmentConfirmation({
+          nombreUsuario: usuario.nombre,
+          correo: usuario.correo,
+          tituloEvento: evento.titulo,
+          fechaInicio: evento.fechaInicio.toISOString(),
+          fechaFin: evento.fechaFin.toISOString(),
+          modalidad: evento.modalidad,
+          ubicacion: evento.ubicacion,
+          esPago: evento.tipoInscripcion === RegistrationInscripcionType.PAGA,
+          appUrl,
+        });
+      } catch (error) {
+        console.error('Error encolando email de confirmación:', error);
+        // No fallar la inscripción si el email falla
+      }
 
       return {
         mensaje:
@@ -128,7 +134,7 @@ export class RegistrationsService {
           estado: inscripcionGuardada.estado,
           createdAt: inscripcionGuardada.createdAt,
         },
-        cuposRestantes: evento.cuposDisponibles,
+        cuposRestantes: evento.cuposDisponibles - 1,
       };
     });
   }
@@ -155,17 +161,15 @@ export class RegistrationsService {
       }
 
       inscripcion.estado = RegistrationStatus.CANCELADA;
-      await manager.save(inscripcion);
+      await manager.save(Registration, inscripcion);
 
-      const evento = await manager.findOne(Event, {
-        where: { id: dto.eventoId },
-        lock: { mode: 'pessimistic_write' },
-      });
-
-      if (evento) {
-        evento.cuposDisponibles += 1;
-        await manager.save(evento);
-      }
+      // Incrementar cupos directamente sin cargar relaciones del evento
+      await manager.increment(
+        Event,
+        { id: dto.eventoId },
+        'cuposDisponibles',
+        1,
+      );
 
       return { mensaje: 'Inscripción cancelada exitosamente' };
     });
@@ -218,6 +222,7 @@ export class RegistrationsService {
   async findOne(id: string): Promise<Registration> {
     const registration = await this.registrationsRepository.findOne({
       where: { id },
+      relations: ['usuario', 'evento'],
     });
     if (!registration) {
       throw new NotFoundException(`Inscripción con id "${id}" no encontrada`);

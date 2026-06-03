@@ -60,8 +60,9 @@ export class Event {
   @Column({ type: 'timestamptz', nullable: true })
   fechaLimiteInscripcion: Date | null;
 
-  @Column({ type: 'boolean', default: false })
   @OneToMany(() => Registration, (registration) => registration.evento)
   inscripciones: Registration[];
+
+  @Column({ type: 'boolean', default: false })
   requiereAprobacion: boolean;
 }

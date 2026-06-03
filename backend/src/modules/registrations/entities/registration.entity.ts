@@ -26,11 +26,11 @@ export class Registration {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE', eager: true })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'usuario_id' })
   usuario: User;
 
-  @ManyToOne(() => Event, { nullable: false, onDelete: 'CASCADE', eager: true })
+  @ManyToOne(() => Event, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'evento_id' })
   evento: Event;
 

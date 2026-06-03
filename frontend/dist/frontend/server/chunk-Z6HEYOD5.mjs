@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a}from"./chunk-RQCV77LW.mjs";import{i as o,kb as c,l as e}from"./chunk-FHXEMTOC.mjs";var f=(()=>{class t{constructor(i,r){this.authService=i,this.router=r}canActivate(){return this.authService.isLoggedIn()?!0:this.router.createUrlTree(["/auth/login"])}static{this.\u0275fac=function(r){return new(r||t)(e(a),e(c))}}static{this.\u0275prov=o({token:t,factory:t.\u0275fac,providedIn:"root"})}}return t})();export{f as a};

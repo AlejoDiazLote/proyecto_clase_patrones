@@ -25,6 +25,7 @@ export class AttendanceService {
   async register(dto: RegisterAttendanceDto): Promise<Attendance> {
     const inscripcion = await this.registrationsRepository.findOne({
       where: { id: dto.inscripcionId },
+      relations: ['usuario', 'evento'],
     });
 
     if (!inscripcion) {
