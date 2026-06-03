@@ -34,8 +34,13 @@ export class RegistrationsService {
     inscripcion: Partial<Registration>;
     cuposRestantes: number;
   }> {
-    return this.dataSource.transaction(async (manager) => {
-      const evento = await manager.findOne(Event, {
+    // Datos para email (fuera de la transacción)
+    let usuario: User;
+    let evento: Event;
+    let estadoInicial: RegistrationStatus;
+
+    const resultado = await this.dataSource.transaction(async (manager) => {
+      evento = await manager.findOne(Event, {
         where: { id: dto.eventoId },
         lock: { mode: 'pessimistic_write' },
       });
@@ -58,7 +63,7 @@ export class RegistrationsService {
         );
       }
 
-      const usuario = await manager.findOne(User, {
+      usuario = await manager.findOne(User, {
         where: { id: dto.usuarioId },
       });
 
@@ -85,7 +90,7 @@ export class RegistrationsService {
         );
       }
 
-      const estadoInicial =
+      estadoInicial =
         evento.tipoInscripcion === RegistrationInscripcionType.GRATUITA
           ? RegistrationStatus.CONFIRMADA
           : RegistrationStatus.PENDIENTE;
@@ -102,28 +107,6 @@ export class RegistrationsService {
 
       const inscripcionGuardada = await manager.save(Registration, inscripcion);
 
-      // Enviar email de confirmación de inscripción (sin bloquear si falla)
-      try {
-        const appUrl = this.configService.get<string>(
-          'APP_URL',
-          'http://localhost:4200',
-        );
-        await this.notificationsService.enqueueEnrollmentConfirmation({
-          nombreUsuario: usuario.nombre,
-          correo: usuario.correo,
-          tituloEvento: evento.titulo,
-          fechaInicio: evento.fechaInicio.toISOString(),
-          fechaFin: evento.fechaFin.toISOString(),
-          modalidad: evento.modalidad,
-          ubicacion: evento.ubicacion,
-          esPago: evento.tipoInscripcion === RegistrationInscripcionType.PAGA,
-          appUrl,
-        });
-      } catch (error) {
-        console.error('Error encolando email de confirmación:', error);
-        // No fallar la inscripción si el email falla
-      }
-
       return {
         mensaje:
           estadoInicial === RegistrationStatus.CONFIRMADA
@@ -137,6 +120,51 @@ export class RegistrationsService {
         cuposRestantes: evento.cuposDisponibles - 1,
       };
     });
+
+    // Enviar email FUERA de la transacción (async, sin bloquear)
+    setImmediate(() => {
+      this.enviarEmailConfirmacion(usuario, evento, estadoInicial).catch(
+        (error) => {
+          console.error('Error encolando email de confirmación:', error);
+        },
+      );
+    });
+
+    return resultado;
+  }
+
+  private async enviarEmailConfirmacion(
+    usuario: User,
+    evento: Event,
+    estadoInicial: RegistrationStatus,
+  ): Promise<void> {
+    try {
+      const appUrl = this.configService.get<string>(
+        'APP_URL',
+        'http://localhost:4200',
+      );
+      
+      // Timeout de 5 segundos para evitar bloqueos
+      await Promise.race([
+        this.notificationsService.enqueueEnrollmentConfirmation({
+          nombreUsuario: usuario.nombre,
+          correo: usuario.correo,
+          tituloEvento: evento.titulo,
+          fechaInicio: evento.fechaInicio.toISOString(),
+          fechaFin: evento.fechaFin.toISOString(),
+          modalidad: evento.modalidad,
+          ubicacion: evento.ubicacion,
+          esPago: evento.tipoInscripcion === RegistrationInscripcionType.PAGA,
+          appUrl,
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Email timeout')), 5000),
+        ),
+      ]);
+    } catch (error) {
+      console.error('Error enviando email de confirmación:', error.message);
+      // Fallar silenciosamente - el email no es crítico
+    }
   }
 
   async cancelarInscripcion(
