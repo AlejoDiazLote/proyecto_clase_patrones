@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { IsUuidFormat } from '../../../shared/validators/is-uuid-format.validator';
 
 export class InscribirseDto {
   @ApiProperty({
@@ -9,7 +10,7 @@ export class InscribirseDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsUUID('all', { message: 'usuarioId must be a valid UUID' })
+  @IsUuidFormat({ message: 'usuarioId must be a valid UUID format' })
   @Transform(({ value }) => value?.toString().trim())
   usuarioId: string;
 
@@ -19,7 +20,7 @@ export class InscribirseDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsUUID('all', { message: 'eventoId must be a valid UUID' })
+  @IsUuidFormat({ message: 'eventoId must be a valid UUID format' })
   @Transform(({ value }) => value?.toString().trim())
   eventoId: string;
 }
