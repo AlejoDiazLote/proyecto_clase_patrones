@@ -27,7 +27,11 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://localhost:4201'],
+    origin: [
+      'http://localhost:4200',
+      'http://localhost:4201',
+      'https://eventos-academicos-omega.vercel.app',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
