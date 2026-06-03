@@ -9,7 +9,7 @@ export class InscribirseDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsUUID('4', { message: 'usuarioId must be a valid UUID' })
+  @IsUUID('all', { message: 'usuarioId must be a valid UUID' })
   @Transform(({ value }) => value?.toString().trim())
   usuarioId: string;
 
@@ -19,7 +19,7 @@ export class InscribirseDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsUUID('4', { message: 'eventoId must be a valid UUID' })
+  @IsUUID('all', { message: 'eventoId must be a valid UUID' })
   @Transform(({ value }) => value?.toString().trim())
   eventoId: string;
 }

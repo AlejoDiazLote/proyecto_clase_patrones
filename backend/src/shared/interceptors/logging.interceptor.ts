@@ -27,7 +27,10 @@ export class LoggingInterceptor implements NestInterceptor {
         error: (error) => {
           if (url.includes('/inscripciones') && method === 'POST') {
             this.logger.error('Error en inscripción:', error.message);
-            this.logger.error('Body que causó error:', JSON.stringify(body, null, 2));
+            this.logger.error(
+              'Body que causó error:',
+              JSON.stringify(body, null, 2),
+            );
           }
         },
       }),

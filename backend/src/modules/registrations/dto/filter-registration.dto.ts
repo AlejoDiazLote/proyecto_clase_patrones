@@ -9,7 +9,7 @@ export class FilterRegistrationDto extends PaginationDto {
     description: 'Filtrar por UUID del usuario',
   })
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all')
   usuarioId?: string;
 
   @ApiPropertyOptional({
@@ -17,7 +17,7 @@ export class FilterRegistrationDto extends PaginationDto {
     description: 'Filtrar por UUID del evento',
   })
   @IsOptional()
-  @IsUUID()
+  @IsUUID('all')
   eventoId?: string;
 
   @ApiPropertyOptional({

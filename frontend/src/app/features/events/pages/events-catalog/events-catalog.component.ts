@@ -187,7 +187,7 @@ export class EventsCatalogComponent implements OnInit {
       usuarioId: user.id,
       eventoId: event.id,
       eventoIdType: typeof event.id,
-      evento: event
+      evento: event,
     });
 
     this.inscriptionState = 'loading';

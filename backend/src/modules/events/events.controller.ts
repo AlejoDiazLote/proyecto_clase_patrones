@@ -58,12 +58,15 @@ export class EventsController {
     const events = await this.eventsService.findAll({ limit: 100 });
     return {
       count: events.data.length,
-      ids: events.data.map(e => ({
+      ids: events.data.map((e) => ({
         id: e.id,
         idType: typeof e.id,
         titulo: e.titulo,
-        isUuid: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(e.id)
-      }))
+        isUuid:
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+            e.id,
+          ),
+      })),
     };
   }
 

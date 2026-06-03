@@ -7,9 +7,7 @@ export class ParseUUIDPipe implements PipeTransform<string> {
 
   transform(value: string): string {
     if (!value) {
-      throw new BadRequestException(
-        `El campo ${this.fieldName} es requerido`,
-      );
+      throw new BadRequestException(`El campo ${this.fieldName} es requerido`);
     }
 
     const trimmedValue = value.toString().trim();
@@ -17,7 +15,7 @@ export class ParseUUIDPipe implements PipeTransform<string> {
     if (!isUuid(trimmedValue)) {
       throw new BadRequestException(
         `El campo ${this.fieldName} debe ser un UUID válido. ` +
-        `Valor recibido: "${trimmedValue}" (tipo: ${typeof value})`,
+          `Valor recibido: "${trimmedValue}" (tipo: ${typeof value})`,
       );
     }
 
